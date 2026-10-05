@@ -1,0 +1,1034 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Apex Attendance - Enterprise Attendance Management System</title>
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#eef2ff',
+              100: '#e0e7ff',
+              500: '#6366f1',
+              600: '#4f46e5',
+              700: '#4338ca',
+              800: '#3730a3',
+              900: '#312e81',
+            },
+            darkBg: '#090d16',
+            cardBg: '#0f172a'
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Font Awesome 6 Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+
+  <!-- Google Fonts: Plus Jakarta Sans & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body class="bg-[#090d16] text-slate-100 min-h-screen flex antialiased selection:bg-indigo-500 selection:text-white">
+
+  <!-- ==============================================================================
+       APP SIDEBAR (Desktop Fixed, Mobile Slide-over)
+       ============================================================================== -->
+  <aside id="app-sidebar"
+         class="fixed inset-y-0 left-0 z-50 w-64 bg-slate-900/95 border-r border-slate-800 backdrop-blur-xl flex flex-col justify-between transition-transform duration-300 ease-in-out md:translate-x-0 -translate-x-full">
+    <div>
+      <!-- Brand Logo Header -->
+      <div class="h-16 flex items-center gap-3 px-6 border-b border-slate-800/80">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-600 to-violet-500 flex items-center justify-center text-white shadow-lg shadow-indigo-500/25">
+          <i class="fa-solid fa-fingerprint text-xl"></i>
+        </div>
+        <div>
+          <h1 class="font-extrabold text-base tracking-tight text-white flex items-center gap-1.5 company-brand-name">
+            Apex Attendance
+          </h1>
+          <span class="text-[10px] font-mono uppercase tracking-widest text-indigo-400 font-semibold">Supabase Native</span>
+        </div>
+      </div>
+
+      <!-- Navigation Links -->
+      <nav class="p-4 space-y-1.5" id="sidebar-nav">
+        <a href="#dashboard" data-view="dashboard"
+           class="nav-link flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold transition-all bg-indigo-600 text-white shadow-lg shadow-indigo-500/20">
+          <i class="fa-solid fa-chart-pie w-5 text-center text-base"></i>
+          <span>Dashboard</span>
+        </a>
+
+        <a href="#kiosk" data-view="kiosk"
+           class="nav-link flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold transition-all text-slate-400 hover:bg-slate-800/70 hover:text-slate-200">
+          <i class="fa-solid fa-stopwatch w-5 text-center text-base"></i>
+          <span>Clock In / Out Kiosk</span>
+        </a>
+
+        <a href="#attendance" data-view="attendance"
+           class="nav-link flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold transition-all text-slate-400 hover:bg-slate-800/70 hover:text-slate-200">
+          <i class="fa-solid fa-clipboard-user w-5 text-center text-base"></i>
+          <span>Daily Attendance</span>
+        </a>
+
+        <a href="#employees" data-view="employees"
+           class="nav-link flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold transition-all text-slate-400 hover:bg-slate-800/70 hover:text-slate-200">
+          <i class="fa-solid fa-user-group w-5 text-center text-base"></i>
+          <span>Employees</span>
+        </a>
+
+        <a href="#leaves" data-view="leaves"
+           class="nav-link flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold transition-all text-slate-400 hover:bg-slate-800/70 hover:text-slate-200">
+          <i class="fa-solid fa-calendar-minus w-5 text-center text-base"></i>
+          <span>Leave Management</span>
+        </a>
+
+        <a href="#reports" data-view="reports"
+           class="nav-link flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold transition-all text-slate-400 hover:bg-slate-800/70 hover:text-slate-200">
+          <i class="fa-solid fa-file-excel w-5 text-center text-base"></i>
+          <span>Timesheet & Export</span>
+        </a>
+
+        <a href="#settings" data-view="settings"
+           class="nav-link flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold transition-all text-slate-400 hover:bg-slate-800/70 hover:text-slate-200">
+          <i class="fa-solid fa-database w-5 text-center text-base"></i>
+          <span>Database & Config</span>
+        </a>
+      </nav>
+    </div>
+
+    <!-- User Profile Footer in Sidebar -->
+    <div class="p-4 border-t border-slate-800/80">
+      <div class="bg-slate-800/50 rounded-xl p-3 flex items-center gap-3 border border-slate-700/50">
+        <div class="w-9 h-9 rounded-full bg-gradient-to-tr from-indigo-500 to-violet-600 flex items-center justify-center font-bold text-white text-xs shadow-sm">
+          <i class="fa-solid fa-user-shield"></i>
+        </div>
+        <div class="truncate flex-1">
+          <div class="font-bold text-xs text-slate-200 truncate">HR Administrator</div>
+          <div class="text-[10px] text-slate-400 truncate">System Manager</div>
+        </div>
+        <button onclick="App.switchView('settings')" class="text-slate-400 hover:text-indigo-400 transition" title="Database Configuration">
+          <i class="fa-solid fa-gear text-sm"></i>
+        </button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ==============================================================================
+       MAIN APPLICATION WRAPPER
+       ============================================================================== -->
+  <div class="flex-1 md:ml-64 flex flex-col min-h-screen">
+
+    <!-- Top Navigation Header -->
+    <header class="h-16 bg-slate-900/60 border-b border-slate-800/80 backdrop-blur-md sticky top-0 z-40 px-6 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <button id="mobile-menu-btn" class="md:hidden p-2 text-slate-400 hover:text-white rounded-lg focus:outline-none">
+          <i class="fa-solid fa-bars text-lg"></i>
+        </button>
+        <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider hidden sm:inline-block">Live System Status</span>
+      </div>
+
+      <!-- Header Right: Connection status badge & quick action -->
+      <div class="flex items-center gap-3">
+        <!-- Live Connection Mode Badge -->
+        <div id="header-connection-badge" class="px-3 py-1.5 rounded-full text-xs font-semibold bg-amber-500/10 text-amber-400 border border-amber-500/20 flex items-center gap-2 cursor-pointer hover:bg-amber-500/20 transition">
+          <span class="w-2 h-2 rounded-full bg-amber-400"></span>
+          <span>Connecting...</span>
+        </div>
+
+        <!-- Quick Launch Kiosk Button -->
+        <button onclick="App.switchView('kiosk')"
+                class="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-semibold bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white shadow-md shadow-indigo-500/20 transition">
+          <i class="fa-solid fa-stopwatch"></i>
+          <span>Clock In / Out</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Main Content Container -->
+    <main class="flex-1 p-6 md:p-8 max-w-7xl w-full mx-auto space-y-6">
+
+      <!-- Unconfigured Alert Banner (shown when Supabase URL/Key missing) -->
+      <div id="unconfigured-alert-banner" class="hidden glass-panel rounded-2xl p-4 border border-amber-500/30 bg-amber-500/10 flex items-center justify-between gap-4">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center text-lg flex-shrink-0">
+            <i class="fa-solid fa-triangle-exclamation"></i>
+          </div>
+          <div>
+            <h4 class="font-bold text-sm text-amber-300">Supabase Database Connection Required</h4>
+            <p class="text-xs text-amber-200/80">Enter your Supabase Project URL and Anon Key to retrieve existing personnel records or bootstrap a new database.</p>
+          </div>
+        </div>
+        <button onclick="App.switchView('settings')" class="px-4 py-2 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs rounded-xl shadow-md transition flex-shrink-0">
+          Configure Supabase Now
+        </button>
+      </div>
+
+      <!-- ==========================================================================
+           VIEW 1: DASHBOARD
+           ========================================================================== -->
+      <section id="view-dashboard" class="view-section space-y-6">
+        <!-- Header Banner -->
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div>
+            <h2 class="text-2xl font-bold tracking-tight text-white">Attendance Overview</h2>
+            <p class="text-sm text-slate-400 mt-1">Workforce attendance, punctuality trends, and active shifts</p>
+          </div>
+          <div class="flex items-center gap-2">
+            <button onclick="App.switchView('attendance')"
+                    class="px-3.5 py-2 text-xs font-semibold rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 transition flex items-center gap-2">
+              <i class="fa-solid fa-list-check"></i> View Daily Logs
+            </button>
+            <button onclick="App.switchView('kiosk')"
+                    class="px-3.5 py-2 text-xs font-semibold rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white shadow-lg shadow-indigo-600/25 transition flex items-center gap-2">
+              <i class="fa-solid fa-qrcode"></i> Clock Kiosk Terminal
+            </button>
+          </div>
+        </div>
+
+        <!-- Key Performance Indicator Cards (KPIs) -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <!-- Total Employees -->
+          <div class="glass-panel rounded-2xl p-5 border border-slate-800 relative overflow-hidden">
+            <div class="flex items-center justify-between">
+              <div>
+                <p class="text-xs font-bold uppercase tracking-wider text-slate-400">Total Staff</p>
+                <h3 id="kpi-total-staff" class="text-3xl font-extrabold text-white mt-1">0</h3>
+              </div>
+              <div class="w-12 h-12 rounded-xl bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 flex items-center justify-center text-xl">
+                <i class="fa-solid fa-users"></i>
+              </div>
+            </div>
+            <div class="mt-4 flex items-center text-xs text-slate-400">
+              <span class="text-indigo-400 font-semibold mr-1.5"><i class="fa-solid fa-id-badge"></i> Profiles:</span> Active in Database
+            </div>
+          </div>
+
+          <!-- Present Today -->
+          <div class="glass-panel rounded-2xl p-5 border border-slate-800 relative overflow-hidden">
+            <div class="flex items-center justify-between">
+              <div>
+                <p class="text-xs font-bold uppercase tracking-wider text-slate-400">Present Today</p>
+                <h3 id="kpi-present-today" class="text-3xl font-extrabold text-emerald-400 mt-1">0</h3>
+              </div>
+              <div class="w-12 h-12 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 flex items-center justify-center text-xl">
+                <i class="fa-solid fa-user-check"></i>
+              </div>
+            </div>
+            <div class="mt-4 flex items-center justify-between text-xs">
+              <span class="text-slate-400">Attendance Rate</span>
+              <span id="kpi-attendance-rate" class="font-bold text-emerald-400">0%</span>
+            </div>
+            <div class="w-full bg-slate-800 h-1.5 rounded-full mt-1.5 overflow-hidden">
+              <div id="kpi-attendance-bar" class="bg-emerald-500 h-full rounded-full transition-all duration-500" style="width: 0%"></div>
+            </div>
+          </div>
+
+          <!-- Late Arrivals -->
+          <div class="glass-panel rounded-2xl p-5 border border-slate-800 relative overflow-hidden">
+            <div class="flex items-center justify-between">
+              <div>
+                <p class="text-xs font-bold uppercase tracking-wider text-slate-400">Late Arrivals</p>
+                <h3 id="kpi-late-today" class="text-3xl font-extrabold text-amber-400 mt-1">0</h3>
+              </div>
+              <div class="w-12 h-12 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-400 flex items-center justify-center text-xl">
+                <i class="fa-solid fa-clock-rotate-left"></i>
+              </div>
+            </div>
+            <div class="mt-4 flex items-center text-xs text-slate-400">
+              <span class="text-amber-400 font-semibold mr-1.5"><i class="fa-solid fa-triangle-exclamation"></i> Shift:</span> Exceeded Grace
+            </div>
+          </div>
+
+          <!-- On Leave / Absent -->
+          <div class="glass-panel rounded-2xl p-5 border border-slate-800 relative overflow-hidden">
+            <div class="flex items-center justify-between">
+              <div>
+                <p class="text-xs font-bold uppercase tracking-wider text-slate-400">Approved Leave</p>
+                <h3 id="kpi-leaves-today" class="text-3xl font-extrabold text-purple-400 mt-1">0</h3>
+              </div>
+              <div class="w-12 h-12 rounded-xl bg-purple-500/10 border border-purple-500/20 text-purple-400 flex items-center justify-center text-xl">
+                <i class="fa-solid fa-calendar-xmark"></i>
+              </div>
+            </div>
+            <div class="mt-4 flex items-center text-xs text-slate-400">
+              <span class="text-purple-400 font-semibold mr-1.5"><i class="fa-solid fa-plane-departure"></i> Approved:</span> Authorized Absence
+            </div>
+          </div>
+        </div>
+
+        <!-- Charts Grid -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <!-- 10-Day Attendance Trends (2 Columns) -->
+          <div class="lg:col-span-2 glass-panel rounded-2xl p-5 border border-slate-800 flex flex-col justify-between">
+            <div class="flex items-center justify-between mb-4">
+              <div>
+                <h3 class="font-bold text-base text-white">Attendance Trends</h3>
+                <p class="text-xs text-slate-400 mt-0.5">Attendance compliance over previous 10 business days</p>
+              </div>
+              <span class="px-2.5 py-1 rounded-lg text-xs bg-slate-800 text-slate-300 font-medium border border-slate-700">10 Days</span>
+            </div>
+            <div class="h-64 w-full">
+              <canvas id="attendanceTrendChart"></canvas>
+            </div>
+          </div>
+
+          <!-- Today's Punctuality Status (1 Column Doughnut) -->
+          <div class="glass-panel rounded-2xl p-5 border border-slate-800 flex flex-col justify-between">
+            <div class="flex items-center justify-between mb-3">
+              <div>
+                <h3 class="font-bold text-base text-white">Today's Distribution</h3>
+                <p class="text-xs text-slate-400 mt-0.5">Live status breakdown</p>
+              </div>
+            </div>
+            <div class="h-64 w-full relative">
+              <canvas id="attendanceDistributionChart"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <!-- Lower Section: Department Performance + Real-Time Punch Feed -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <!-- Department Performance (2 Columns) -->
+          <div class="lg:col-span-2 glass-panel rounded-2xl p-5 border border-slate-800">
+            <div class="flex items-center justify-between mb-4">
+              <div>
+                <h3 class="font-bold text-base text-white">Department Compliance Performance</h3>
+                <p class="text-xs text-slate-400 mt-0.5">Attendance rate grouped by organizational division</p>
+              </div>
+            </div>
+            <div class="h-56 w-full">
+              <canvas id="departmentAttendanceChart"></canvas>
+            </div>
+          </div>
+
+          <!-- Live Punch Activity Feed (1 Column) -->
+          <div class="glass-panel rounded-2xl p-5 border border-slate-800">
+            <div class="flex items-center justify-between mb-3 border-b border-slate-800 pb-3">
+              <h3 class="font-bold text-base text-white flex items-center gap-2">
+                <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+                <span>Today's Clock Activity</span>
+              </h3>
+              <span class="text-[10px] text-slate-500 uppercase tracking-widest font-mono">Live Feed</span>
+            </div>
+            <div id="dashboard-activity-feed" class="space-y-1">
+              <!-- Dynamically populated -->
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==========================================================================
+           VIEW 2: KIOSK CLOCK-IN / OUT TERMINAL
+           ========================================================================== -->
+      <section id="view-kiosk" class="view-section hidden space-y-6">
+        <div class="max-w-4xl mx-auto">
+          <!-- Digital Clock Display Card -->
+          <div class="glass-panel rounded-3xl p-8 border border-slate-800 text-center relative overflow-hidden shadow-2xl">
+            <div class="absolute -top-24 -left-24 w-72 h-72 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none"></div>
+            <div class="absolute -bottom-24 -right-24 w-72 h-72 bg-violet-500/10 rounded-full blur-3xl pointer-events-none"></div>
+
+            <div class="flex items-center justify-center gap-2 mb-2">
+              <span id="kiosk-geo-badge" class="px-3 py-1 rounded-full text-xs font-medium bg-slate-800 text-slate-400 border border-slate-700 flex items-center gap-1.5">
+                <i class="fa-solid fa-location-dot"></i> GPS Active
+              </span>
+              <span class="px-3 py-1 rounded-full text-xs font-medium bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">
+                <i class="fa-solid fa-shield-halved"></i> Biometric Attendance Terminal
+              </span>
+            </div>
+
+            <!-- Massive Digital Clock -->
+            <div class="my-4">
+              <div class="flex items-baseline justify-center">
+                <span id="kiosk-live-time" class="text-6xl md:text-7xl font-extrabold tracking-tight text-white clock-display font-mono">09:00</span>
+                <span id="kiosk-live-sec" class="text-2xl md:text-3xl font-bold text-indigo-400 ml-2 font-mono">:00 AM</span>
+              </div>
+              <p id="kiosk-live-date" class="text-sm font-medium text-slate-400 mt-2">Loading date...</p>
+            </div>
+          </div>
+
+          <!-- Kiosk Interactive Workspace -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+
+            <!-- Left: Camera Verification & Hardware Capture -->
+            <div class="glass-panel rounded-2xl p-5 border border-slate-800 flex flex-col justify-between">
+              <div>
+                <div class="flex items-center justify-between mb-3">
+                  <h3 class="font-bold text-sm text-slate-200 flex items-center gap-2">
+                    <i class="fa-solid fa-camera text-indigo-400"></i> Facial Snapshot Verification
+                  </h3>
+                  <div class="flex items-center gap-2">
+                    <button id="btn-start-cam" class="px-2.5 py-1 text-xs font-semibold bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg transition">
+                      <i class="fa-solid fa-video mr-1"></i> Start Camera
+                    </button>
+                    <button id="btn-stop-cam" class="hidden px-2.5 py-1 text-xs font-semibold bg-rose-600 hover:bg-rose-500 text-white rounded-lg transition">
+                      <i class="fa-solid fa-video-slash mr-1"></i> Stop Camera
+                    </button>
+                  </div>
+                </div>
+
+                <!-- Webcam Video or Placeholder Container -->
+                <div class="w-full h-56 rounded-xl bg-slate-950 border border-slate-800 relative flex items-center justify-center overflow-hidden">
+                  <video id="kiosk-webcam" autoplay playsinline class="hidden w-full h-full object-cover"></video>
+                  <div id="camera-placeholder" class="text-center p-6">
+                    <div class="w-14 h-14 rounded-full bg-slate-900 border border-slate-800 flex items-center justify-center text-slate-500 text-2xl mx-auto mb-2">
+                      <i class="fa-solid fa-camera"></i>
+                    </div>
+                    <p class="text-xs font-semibold text-slate-300">Camera Inactive</p>
+                    <p class="text-[11px] text-slate-500 mt-0.5">Click "Start Camera" above for live verification snapshot</p>
+                  </div>
+                </div>
+              </div>
+
+              <div class="mt-4 pt-3 border-t border-slate-800/80 flex items-center justify-between text-xs text-slate-400">
+                <span>Verification: <b class="text-slate-300">Biometric + Geolocation</b></span>
+                <span>Audit: <b class="text-indigo-400">Supabase Logged</b></span>
+              </div>
+            </div>
+
+            <!-- Right: Employee Identification & Action Buttons -->
+            <div class="glass-panel rounded-2xl p-5 border border-slate-800 flex flex-col justify-between">
+              <div>
+                <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">
+                  Select Employee / Scan Badge
+                </label>
+                <select id="kiosk-employee-select" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-4 py-3 text-white text-sm focus:border-indigo-500 focus:outline-none transition">
+                  <option value="">-- Choose Employee Profile --</option>
+                </select>
+
+                <!-- Active Employee Selected Details Card -->
+                <div id="kiosk-employee-status-card" class="hidden mt-4 p-4 rounded-xl bg-slate-950/80 border border-slate-800">
+                  <div class="flex items-center gap-3">
+                    <img id="kiosk-emp-avatar" src="" alt="Avatar" class="w-12 h-12 rounded-xl object-cover border border-slate-700">
+                    <div>
+                      <h4 id="kiosk-emp-name" class="font-bold text-white text-base">Employee Name</h4>
+                      <p id="kiosk-emp-role" class="text-xs text-indigo-400 font-medium">Position</p>
+                      <p id="kiosk-emp-shift" class="text-[11px] text-slate-400">Shift</p>
+                    </div>
+                  </div>
+
+                  <!-- Today's Punch Summary Inside Card -->
+                  <div class="grid grid-cols-3 gap-2 mt-3 pt-3 border-t border-slate-800 text-center">
+                    <div>
+                      <span class="text-[10px] text-slate-500 block uppercase">Punch In</span>
+                      <span id="kiosk-today-in" class="font-mono text-xs font-bold text-emerald-400">--:--</span>
+                    </div>
+                    <div>
+                      <span class="text-[10px] text-slate-500 block uppercase">Punch Out</span>
+                      <span id="kiosk-today-out" class="font-mono text-xs font-bold text-rose-400">--:--</span>
+                    </div>
+                    <div>
+                      <span class="text-[10px] text-slate-500 block uppercase">Status</span>
+                      <span id="kiosk-today-status" class="px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-slate-800 text-slate-400">Ready</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Main Clock-In / Clock-Out Buttons -->
+              <div id="kiosk-actions-group" class="grid grid-cols-2 gap-3 mt-6 opacity-50 pointer-events-none transition-opacity">
+                <!-- Clock In -->
+                <button id="btn-clock-in"
+                        class="w-full py-4 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-bold text-sm shadow-lg shadow-emerald-600/20 transition transform active:scale-98 flex flex-col items-center justify-center gap-1">
+                  <i class="fa-solid fa-right-to-bracket text-xl"></i>
+                  <span>CLOCK IN</span>
+                </button>
+
+                <!-- Clock Out -->
+                <button id="btn-clock-out"
+                        class="w-full py-4 rounded-xl bg-gradient-to-r from-rose-600 to-red-600 hover:from-rose-500 hover:to-red-500 text-white font-bold text-sm shadow-lg shadow-rose-600/20 transition transform active:scale-98 flex flex-col items-center justify-center gap-1">
+                  <i class="fa-solid fa-right-from-bracket text-xl"></i>
+                  <span>CLOCK OUT</span>
+                </button>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </section>
+
+      <!-- ==========================================================================
+           VIEW 3: DAILY ATTENDANCE MASTER SHEET
+           ========================================================================== -->
+      <section id="view-attendance" class="view-section hidden space-y-6">
+        <!-- Header -->
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div>
+            <h2 class="text-2xl font-bold tracking-tight text-white">Daily Attendance Master</h2>
+            <p class="text-sm text-slate-400 mt-1">Review clock-in logs, audit timestamps, and regularize records</p>
+          </div>
+          <div class="flex items-center gap-2">
+            <button onclick="ReportsModule.exportToCSV()"
+                    class="px-3.5 py-2 text-xs font-semibold rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 transition flex items-center gap-2">
+              <i class="fa-solid fa-file-csv"></i> Export CSV
+            </button>
+            <button onclick="ReportsModule.exportToExcel()"
+                    class="px-3.5 py-2 text-xs font-semibold rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white shadow-lg shadow-emerald-600/20 transition flex items-center gap-2">
+              <i class="fa-solid fa-file-excel"></i> Export Excel
+            </button>
+          </div>
+        </div>
+
+        <!-- Filter Controls Bar -->
+        <div class="glass-panel rounded-2xl p-4 border border-slate-800 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+          <div>
+            <label class="block text-[11px] font-bold uppercase text-slate-400 mb-1">Date</label>
+            <input type="date" id="filter-att-date" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:border-indigo-500 focus:outline-none">
+          </div>
+          <div>
+            <label class="block text-[11px] font-bold uppercase text-slate-400 mb-1">Department</label>
+            <select id="filter-att-dept" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:border-indigo-500 focus:outline-none">
+              <option value="all">All Departments</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-[11px] font-bold uppercase text-slate-400 mb-1">Status</label>
+            <select id="filter-att-status" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:border-indigo-500 focus:outline-none">
+              <option value="all">All Statuses</option>
+              <option value="present">Present (On-time)</option>
+              <option value="late">Late Arrival</option>
+              <option value="half_day">Half Day</option>
+              <option value="absent">Absent</option>
+              <option value="on_leave">On Leave</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-[11px] font-bold uppercase text-slate-400 mb-1">Search Employee</label>
+            <div class="relative">
+              <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-xs text-slate-500"></i>
+              <input type="text" id="filter-att-search" placeholder="Name or Employee ID..." class="w-full bg-slate-950 border border-slate-800 rounded-xl pl-8 pr-3 py-2 text-xs text-white focus:border-indigo-500 focus:outline-none">
+            </div>
+          </div>
+        </div>
+
+        <!-- Attendance Records Table -->
+        <div class="glass-panel rounded-2xl border border-slate-800 overflow-hidden shadow-xl">
+          <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse">
+              <thead>
+                <tr class="bg-slate-950/80 border-b border-slate-800 text-[11px] font-bold uppercase tracking-wider text-slate-400">
+                  <th class="py-3.5 px-4">Employee</th>
+                  <th class="py-3.5 px-4">Date</th>
+                  <th class="py-3.5 px-4">Clock In</th>
+                  <th class="py-3.5 px-4">Clock Out</th>
+                  <th class="py-3.5 px-4">Worked Hours</th>
+                  <th class="py-3.5 px-4">Status</th>
+                  <th class="py-3.5 px-4 text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="attendance-table-body">
+                <!-- Dynamically Populated from Supabase -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==========================================================================
+           VIEW 4: EMPLOYEES DIRECTORY
+           ========================================================================== -->
+      <section id="view-employees" class="view-section hidden space-y-6">
+        <!-- Header -->
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div>
+            <div class="flex items-center gap-3">
+              <h2 class="text-2xl font-bold tracking-tight text-white">Employee Directory</h2>
+              <span id="employee-total-count" class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">0 Employees</span>
+            </div>
+            <p class="text-sm text-slate-400 mt-1">Manage personnel, roles, departments, shifts, and authentication PINs in Supabase</p>
+          </div>
+          <button id="btn-add-employee"
+                  class="px-4 py-2.5 text-xs font-semibold rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white shadow-lg shadow-indigo-600/25 transition flex items-center gap-2 self-start sm:self-auto">
+            <i class="fa-solid fa-user-plus"></i> Add New Employee
+          </button>
+        </div>
+
+        <!-- Filter & Search Bar -->
+        <div class="glass-panel rounded-2xl p-4 border border-slate-800 grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <div class="sm:col-span-1">
+            <label class="block text-[11px] font-bold uppercase text-slate-400 mb-1">Search Directory</label>
+            <div class="relative">
+              <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-xs text-slate-500"></i>
+              <input type="text" id="filter-emp-search" placeholder="Search by name, title, email..." class="w-full bg-slate-950 border border-slate-800 rounded-xl pl-8 pr-3 py-2 text-xs text-white focus:border-indigo-500 focus:outline-none">
+            </div>
+          </div>
+          <div>
+            <label class="block text-[11px] font-bold uppercase text-slate-400 mb-1">Department</label>
+            <select id="filter-emp-dept" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:border-indigo-500 focus:outline-none">
+              <option value="all">All Departments</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-[11px] font-bold uppercase text-slate-400 mb-1">Status</label>
+            <select id="filter-emp-status" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:border-indigo-500 focus:outline-none">
+              <option value="all">All Statuses</option>
+              <option value="active">Active Only</option>
+              <option value="on_leave">On Leave</option>
+              <option value="inactive">Inactive</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Employee Cards Grid -->
+        <div id="employee-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+          <!-- Dynamically populated from Supabase -->
+        </div>
+      </section>
+
+      <!-- ==========================================================================
+           VIEW 5: LEAVE MANAGEMENT
+           ========================================================================== -->
+      <section id="view-leaves" class="view-section hidden space-y-6">
+        <!-- Header -->
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div>
+            <h2 class="text-2xl font-bold tracking-tight text-white">Leave Applications</h2>
+            <p class="text-sm text-slate-400 mt-1">Review leave requests, approve time off, and maintain workforce quotas</p>
+          </div>
+          <button id="btn-open-apply-leave"
+                  class="px-4 py-2.5 text-xs font-semibold rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white shadow-lg shadow-indigo-600/25 transition flex items-center gap-2 self-start sm:self-auto">
+            <i class="fa-solid fa-plus"></i> Apply For Leave
+          </button>
+        </div>
+
+        <!-- Leave KPI Counters -->
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div class="glass-panel rounded-2xl p-5 border border-slate-800 flex items-center justify-between">
+            <div>
+              <p class="text-xs font-bold uppercase tracking-wider text-amber-400">Pending Review</p>
+              <h3 id="kpi-leaves-pending" class="text-2xl font-extrabold text-white mt-1">0</h3>
+            </div>
+            <div class="w-10 h-10 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-400 flex items-center justify-center text-lg">
+              <i class="fa-solid fa-hourglass-half"></i>
+            </div>
+          </div>
+
+          <div class="glass-panel rounded-2xl p-5 border border-slate-800 flex items-center justify-between">
+            <div>
+              <p class="text-xs font-bold uppercase tracking-wider text-emerald-400">Approved Leaves</p>
+              <h3 id="kpi-leaves-approved" class="text-2xl font-extrabold text-white mt-1">0</h3>
+            </div>
+            <div class="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 flex items-center justify-center text-lg">
+              <i class="fa-solid fa-circle-check"></i>
+            </div>
+          </div>
+
+          <div class="glass-panel rounded-2xl p-5 border border-slate-800 flex items-center justify-between">
+            <div>
+              <p class="text-xs font-bold uppercase tracking-wider text-rose-400">Rejected</p>
+              <h3 id="kpi-leaves-rejected" class="text-2xl font-extrabold text-white mt-1">0</h3>
+            </div>
+            <div class="w-10 h-10 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-400 flex items-center justify-center text-lg">
+              <i class="fa-solid fa-ban"></i>
+            </div>
+          </div>
+        </div>
+
+        <!-- Filter Tabs -->
+        <div class="flex items-center gap-2 border-b border-slate-800 pb-3">
+          <button data-status="all" class="leave-tab-btn px-3.5 py-1.5 rounded-lg text-xs font-bold border transition text-indigo-400 border-indigo-500 bg-slate-800/80">All Requests</button>
+          <button data-status="pending" class="leave-tab-btn px-3.5 py-1.5 rounded-lg text-xs font-bold border transition text-slate-400 border-transparent hover:text-slate-200">Pending</button>
+          <button data-status="approved" class="leave-tab-btn px-3.5 py-1.5 rounded-lg text-xs font-bold border transition text-slate-400 border-transparent hover:text-slate-200">Approved</button>
+          <button data-status="rejected" class="leave-tab-btn px-3.5 py-1.5 rounded-lg text-xs font-bold border transition text-slate-400 border-transparent hover:text-slate-200">Rejected</button>
+        </div>
+
+        <!-- Leave Requests Table -->
+        <div class="glass-panel rounded-2xl border border-slate-800 overflow-hidden shadow-xl">
+          <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse">
+              <thead>
+                <tr class="bg-slate-950/80 border-b border-slate-800 text-[11px] font-bold uppercase tracking-wider text-slate-400">
+                  <th class="py-3.5 px-4">Employee</th>
+                  <th class="py-3.5 px-4">Leave Type</th>
+                  <th class="py-3.5 px-4">Date Range & Duration</th>
+                  <th class="py-3.5 px-4">Reason</th>
+                  <th class="py-3.5 px-4">Submitted</th>
+                  <th class="py-3.5 px-4">Status</th>
+                  <th class="py-3.5 px-4 text-right">Review Action</th>
+                </tr>
+              </thead>
+              <tbody id="leave-table-body">
+                <!-- Dynamically populated from Supabase -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==========================================================================
+           VIEW 6: TIMESHEET & REPORTS
+           ========================================================================== -->
+      <section id="view-reports" class="view-section hidden space-y-6">
+        <!-- Header -->
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div>
+            <h2 class="text-2xl font-bold tracking-tight text-white">Monthly Timesheet Matrix</h2>
+            <p class="text-sm text-slate-400 mt-1">Calendar matrix view with aggregated hours and spreadsheet downloads</p>
+          </div>
+          <div class="flex items-center gap-2" id="filter-controls">
+            <button id="btn-print-timesheet"
+                    class="px-3.5 py-2 text-xs font-semibold rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 transition flex items-center gap-2">
+              <i class="fa-solid fa-print"></i> Print
+            </button>
+            <button id="btn-export-csv"
+                    class="px-3.5 py-2 text-xs font-semibold rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 transition flex items-center gap-2">
+              <i class="fa-solid fa-file-csv"></i> CSV
+            </button>
+            <button id="btn-export-xlsx"
+                    class="px-3.5 py-2 text-xs font-semibold rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white shadow-lg shadow-emerald-600/20 transition flex items-center gap-2">
+              <i class="fa-solid fa-file-excel"></i> Excel (.xlsx)
+            </button>
+          </div>
+        </div>
+
+        <!-- Month & Year Selector -->
+        <div class="glass-panel rounded-2xl p-4 border border-slate-800 flex flex-wrap items-center gap-4">
+          <div class="flex items-center gap-2">
+            <span class="text-xs font-bold uppercase text-slate-400">Month:</span>
+            <select id="report-month-select" class="bg-slate-950 border border-slate-800 rounded-xl px-3 py-1.5 text-xs text-white focus:border-indigo-500 focus:outline-none"></select>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="text-xs font-bold uppercase text-slate-400">Year:</span>
+            <select id="report-year-select" class="bg-slate-950 border border-slate-800 rounded-xl px-3 py-1.5 text-xs text-white focus:border-indigo-500 focus:outline-none"></select>
+          </div>
+
+          <!-- Color Legend -->
+          <div class="ml-auto flex items-center gap-3 text-[11px] text-slate-400">
+            <span class="flex items-center gap-1"><span class="w-3 h-3 rounded bg-emerald-500/20 text-emerald-400 text-center font-bold text-[9px] inline-block leading-3">P</span> Present</span>
+            <span class="flex items-center gap-1"><span class="w-3 h-3 rounded bg-amber-500/20 text-amber-400 text-center font-bold text-[9px] inline-block leading-3">L</span> Late</span>
+            <span class="flex items-center gap-1"><span class="w-3 h-3 rounded bg-rose-500/20 text-rose-400 text-center font-bold text-[9px] inline-block leading-3">A</span> Absent</span>
+            <span class="flex items-center gap-1"><span class="w-3 h-3 rounded bg-purple-500/20 text-purple-400 text-center font-bold text-[9px] inline-block leading-3">LV</span> Leave</span>
+            <span class="flex items-center gap-1"><span class="w-3 h-3 rounded bg-slate-800 text-slate-500 text-center font-bold text-[9px] inline-block leading-3">W</span> Weekend</span>
+          </div>
+        </div>
+
+        <!-- Timesheet Matrix Table -->
+        <div class="glass-panel rounded-2xl border border-slate-800 overflow-hidden shadow-xl">
+          <div class="overflow-x-auto max-h-[600px]">
+            <table class="w-full text-left border-collapse">
+              <thead id="matrix-timesheet-head">
+                <!-- Dynamically generated days -->
+              </thead>
+              <tbody id="matrix-timesheet-body">
+                <!-- Dynamically generated rows -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==========================================================================
+           VIEW 7: DATABASE & SYSTEM SETTINGS
+           ========================================================================== -->
+      <section id="view-settings" class="view-section hidden space-y-6">
+        <div>
+          <h2 class="text-2xl font-bold tracking-tight text-white">Database Configuration & Settings</h2>
+          <p class="text-sm text-slate-400 mt-1">Connect your Supabase project to retrieve existing workforce data or initialize a new database</p>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+          <!-- Left 2 Cols: Supabase Cloud DB Connection -->
+          <div class="lg:col-span-2 space-y-6">
+            <div class="glass-panel rounded-2xl p-6 border border-slate-800 space-y-4">
+              <div class="flex items-center justify-between pb-3 border-b border-slate-800">
+                <div class="flex items-center gap-3">
+                  <div class="w-10 h-10 rounded-xl bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 flex items-center justify-center text-lg">
+                    <i class="fa-solid fa-bolt"></i>
+                  </div>
+                  <div>
+                    <h3 class="font-bold text-base text-white">Supabase Cloud Database Credentials</h3>
+                    <p class="text-xs text-slate-400">Found in your Supabase Dashboard -> Project Settings -> API</p>
+                  </div>
+                </div>
+              </div>
+
+              <div class="space-y-4">
+                <div>
+                  <label class="block text-xs font-bold uppercase text-slate-400 mb-1">Supabase Project URL *</label>
+                  <input type="text" id="settings-supabase-url" placeholder="https://yourprojectid.supabase.co" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-white font-mono focus:border-indigo-500 focus:outline-none">
+                </div>
+
+                <div>
+                  <label class="block text-xs font-bold uppercase text-slate-400 mb-1">Supabase Anon Public API Key *</label>
+                  <input type="password" id="settings-supabase-key" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..." class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-white font-mono focus:border-indigo-500 focus:outline-none">
+                </div>
+              </div>
+
+              <!-- Action Buttons -->
+              <div class="flex flex-wrap items-center gap-3 pt-3">
+                <button id="btn-test-supabase"
+                        class="px-4 py-2.5 text-xs font-semibold rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition flex items-center gap-2">
+                  <i class="fa-solid fa-plug"></i> Test Connection
+                </button>
+                <button id="btn-save-db-settings"
+                        class="px-5 py-2.5 text-xs font-semibold rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white shadow-lg shadow-indigo-600/25 transition flex items-center gap-2">
+                  <i class="fa-solid fa-floppy-disk"></i> Save & Connect Database
+                </button>
+                <button id="btn-bootstrap-db"
+                        class="px-4 py-2.5 text-xs font-semibold rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white shadow-lg shadow-emerald-600/20 transition flex items-center gap-2"
+                        title="Creates standard default departments and shifts in a newly created database">
+                  <i class="fa-solid fa-wand-magic-sparkles"></i> Initialize Default Departments & Shifts
+                </button>
+                <button id="btn-disconnect-db"
+                        class="px-4 py-2.5 text-xs font-semibold rounded-xl bg-slate-800 hover:bg-rose-500/10 hover:text-rose-400 text-slate-400 border border-slate-700 hover:border-rose-500/30 transition flex items-center gap-2 ml-auto">
+                  <i class="fa-solid fa-link-slash"></i> Disconnect
+                </button>
+              </div>
+            </div>
+
+            <!-- Organization Rules Settings -->
+            <div class="glass-panel rounded-2xl p-6 border border-slate-800 space-y-4">
+              <h3 class="font-bold text-base text-white flex items-center gap-2">
+                <i class="fa-solid fa-building text-indigo-400"></i> Organization Attendance Rules
+              </h3>
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label class="block text-xs font-bold uppercase text-slate-400 mb-1">Company / Organization Name</label>
+                  <input type="text" id="settings-company-name" value="Apex Enterprise" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-white focus:border-indigo-500 focus:outline-none">
+                </div>
+                <div>
+                  <label class="block text-xs font-bold uppercase text-slate-400 mb-1">Late Grace Period (Minutes)</label>
+                  <input type="number" id="settings-grace-period" value="15" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-white focus:border-indigo-500 focus:outline-none">
+                </div>
+                <div>
+                  <label class="block text-xs font-bold uppercase text-slate-400 mb-1">Standard Work Start Time</label>
+                  <input type="time" id="settings-work-start" value="09:00" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-white focus:border-indigo-500 focus:outline-none">
+                </div>
+                <div>
+                  <label class="block text-xs font-bold uppercase text-slate-400 mb-1">Standard Work End Time</label>
+                  <input type="time" id="settings-work-end" value="18:00" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-white focus:border-indigo-500 focus:outline-none">
+                </div>
+              </div>
+              <button id="btn-save-company-settings"
+                      class="px-4 py-2 text-xs font-semibold rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white transition flex items-center gap-2">
+                <i class="fa-solid fa-check"></i> Save Organization Rules
+              </button>
+            </div>
+          </div>
+
+          <!-- Right 1 Col: Quick Supabase Guide -->
+          <div class="space-y-6">
+            <div class="glass-panel rounded-2xl p-6 border border-slate-800 space-y-4">
+              <h3 class="font-bold text-sm text-white flex items-center gap-2">
+                <i class="fa-solid fa-circle-info text-emerald-400"></i> Setup Instructions
+              </h3>
+              <ol class="text-xs text-slate-400 space-y-2 list-decimal list-inside">
+                <li>Create a project at <b class="text-slate-300">supabase.com</b></li>
+                <li>Go to <b class="text-slate-300">SQL Editor</b> in your Supabase dashboard</li>
+                <li>Run the included <b class="text-indigo-400 font-mono">schema.sql</b> to create tables</li>
+                <li>Copy your <b class="text-slate-300">Project URL</b> and <b class="text-slate-300">Anon Key</b> from Project Settings -> API</li>
+                <li>Paste them on the left and click <b class="text-indigo-400">Save & Connect</b></li>
+              </ol>
+
+              <div class="pt-2 border-t border-slate-800 text-xs text-slate-400 space-y-1">
+                <p class="text-[11px] text-slate-500">Schema file: <code class="text-indigo-300 font-mono">supabase/schema.sql</code></p>
+                <p class="text-[11px] text-slate-500">All data is retrieved live and stored directly in your Supabase database.</p>
+              </div>
+            </div>
+
+            <!-- Features Summary Card -->
+            <div class="glass-panel rounded-2xl p-6 border border-slate-800 space-y-3">
+              <h4 class="font-bold text-xs uppercase tracking-wider text-slate-400">Features Active</h4>
+              <div class="space-y-2 text-xs text-slate-300">
+                <div class="flex items-center gap-2"><i class="fa-solid fa-check text-emerald-400"></i> Direct Supabase REST & Realtime API</div>
+                <div class="flex items-center gap-2"><i class="fa-solid fa-check text-emerald-400"></i> Web Biometric Camera Snapshot</div>
+                <div class="flex items-center gap-2"><i class="fa-solid fa-check text-emerald-400"></i> Geolocation Geofencing Check</div>
+                <div class="flex items-center gap-2"><i class="fa-solid fa-check text-emerald-400"></i> SheetJS Excel (.xlsx) Export</div>
+                <div class="flex items-center gap-2"><i class="fa-solid fa-check text-emerald-400"></i> Web Audio Feedback Synthesizer</div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- ==============================================================================
+       MODAL 1: ADD / EDIT EMPLOYEE
+       ============================================================================== -->
+  <div id="employee-modal" class="hidden fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-lg overflow-hidden shadow-2xl animate-in fade-in duration-200">
+      <div class="flex items-center justify-between p-5 border-b border-slate-800">
+        <h3 id="employee-modal-title" class="font-bold text-base text-white">Register New Employee</h3>
+        <button id="btn-close-emp-modal" class="text-slate-400 hover:text-white p-1 rounded-lg">
+          <i class="fa-solid fa-xmark text-lg"></i>
+        </button>
+      </div>
+
+      <form id="employee-form" class="p-6 space-y-4 max-h-[80vh] overflow-y-auto">
+        <input type="hidden" id="emp-form-id">
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-bold uppercase text-slate-400 mb-1">First Name *</label>
+            <input type="text" id="emp-form-firstname" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-white focus:border-indigo-500 focus:outline-none">
+          </div>
+          <div>
+            <label class="block text-xs font-bold uppercase text-slate-400 mb-1">Last Name *</label>
+            <input type="text" id="emp-form-lastname" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-white focus:border-indigo-500 focus:outline-none">
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-bold uppercase text-slate-400 mb-1">Employee Code *</label>
+            <input type="text" id="emp-form-code" required placeholder="EMP-1001" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-white font-mono focus:border-indigo-500 focus:outline-none">
+          </div>
+          <div>
+            <label class="block text-xs font-bold uppercase text-slate-400 mb-1">Kiosk Security PIN *</label>
+            <input type="text" id="emp-form-pin" value="1234" required maxlength="6" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-white font-mono focus:border-indigo-500 focus:outline-none">
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-bold uppercase text-slate-400 mb-1">Email *</label>
+            <input type="email" id="emp-form-email" required placeholder="name@company.com" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-white focus:border-indigo-500 focus:outline-none">
+          </div>
+          <div>
+            <label class="block text-xs font-bold uppercase text-slate-400 mb-1">Phone Number</label>
+            <input type="text" id="emp-form-phone" placeholder="+1 (555) 000-0000" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-white focus:border-indigo-500 focus:outline-none">
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-bold uppercase text-slate-400 mb-1">Department</label>
+            <select id="emp-form-dept" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-white focus:border-indigo-500 focus:outline-none"></select>
+          </div>
+          <div>
+            <label class="block text-xs font-bold uppercase text-slate-400 mb-1">Shift</label>
+            <select id="emp-form-shift" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-white focus:border-indigo-500 focus:outline-none"></select>
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold uppercase text-slate-400 mb-1">Job Title / Designation *</label>
+          <input type="text" id="emp-form-position" required placeholder="e.g. Lead Software Engineer" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-white focus:border-indigo-500 focus:outline-none">
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-bold uppercase text-slate-400 mb-1">Status</label>
+            <select id="emp-form-status" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-white focus:border-indigo-500 focus:outline-none">
+              <option value="active">Active</option>
+              <option value="on_leave">On Leave</option>
+              <option value="inactive">Inactive</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-bold uppercase text-slate-400 mb-1">Avatar Image URL</label>
+            <input type="url" id="emp-form-avatar" placeholder="https://..." class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-white focus:border-indigo-500 focus:outline-none">
+          </div>
+        </div>
+
+        <div class="flex items-center justify-end gap-3 pt-4 border-t border-slate-800">
+          <button type="button" onclick="EmployeeModule.closeEmployeeModal()" class="px-4 py-2 rounded-xl text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-300 transition">Cancel</button>
+          <button type="submit" class="px-5 py-2 rounded-xl text-xs font-semibold bg-indigo-600 hover:bg-indigo-500 text-white shadow-lg shadow-indigo-600/25 transition">Save Employee</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ==============================================================================
+       MODAL 2: APPLY FOR LEAVE
+       ============================================================================== -->
+  <div id="apply-leave-modal" class="hidden fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-md overflow-hidden shadow-2xl">
+      <div class="flex items-center justify-between p-5 border-b border-slate-800">
+        <h3 class="font-bold text-base text-white">Submit Leave Request</h3>
+        <button id="btn-close-leave-modal" class="text-slate-400 hover:text-white p-1 rounded-lg">
+          <i class="fa-solid fa-xmark text-lg"></i>
+        </button>
+      </div>
+
+      <form id="apply-leave-form" class="p-6 space-y-4">
+        <div>
+          <label class="block text-xs font-bold uppercase text-slate-400 mb-1">Select Employee *</label>
+          <select id="leave-form-employee" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-white focus:border-indigo-500 focus:outline-none"></select>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold uppercase text-slate-400 mb-1">Leave Category *</label>
+          <select id="leave-form-type" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-white focus:border-indigo-500 focus:outline-none">
+            <option value="annual">Annual Vacation Leave</option>
+            <option value="casual">Casual / Personal Leave</option>
+            <option value="sick">Sick / Medical Leave</option>
+            <option value="unpaid">Unpaid Leave</option>
+          </select>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-bold uppercase text-slate-400 mb-1">Start Date *</label>
+            <input type="date" id="leave-form-start" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:border-indigo-500 focus:outline-none">
+          </div>
+          <div>
+            <label class="block text-xs font-bold uppercase text-slate-400 mb-1">End Date *</label>
+            <input type="date" id="leave-form-end" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:border-indigo-500 focus:outline-none">
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold uppercase text-slate-400 mb-1">Total Days</label>
+          <input type="number" id="leave-form-days" min="0.5" step="0.5" value="1" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-white focus:border-indigo-500 focus:outline-none">
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold uppercase text-slate-400 mb-1">Reason / Description *</label>
+          <textarea id="leave-form-reason" required rows="3" placeholder="Provide details regarding the reason for time off..." class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-white focus:border-indigo-500 focus:outline-none"></textarea>
+        </div>
+
+        <div class="flex items-center justify-end gap-3 pt-4 border-t border-slate-800">
+          <button type="button" onclick="LeaveModule.closeApplyLeaveModal()" class="px-4 py-2 rounded-xl text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-300 transition">Cancel</button>
+          <button type="submit" class="px-5 py-2 rounded-xl text-xs font-semibold bg-indigo-600 hover:bg-indigo-500 text-white shadow-lg shadow-indigo-600/25 transition">Submit Application</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ==============================================================================
+       EXTERNAL DEPENDENCY SCRIPTS (CDN)
+       ============================================================================== -->
+  <!-- Supabase JS Client v2 -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <!-- Chart.js for Analytics -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <!-- SweetAlert2 for notifications -->
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+  <!-- SheetJS / XLSX for Excel Export -->
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+
+  <!-- Canvas Confetti for Celebration FX -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+  <!-- ==============================================================================
+       APPLICATION LOGIC SCRIPTS (Pure Supabase Architecture)
+       ============================================================================== -->
+  <script src="js/config.js"></script>
+  <script src="js/db.js"></script>
+  <script src="js/attendance.js"></script>
+  <script src="js/employees.js"></script>
+  <script src="js/leaves.js"></script>
+  <script src="js/analytics.js"></script>
+  <script src="js/reports.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
