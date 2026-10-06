@@ -1,6 +1,7 @@
 /**
  * Supabase Database Service Layer
  * All operations communicate directly and exclusively with Supabase Cloud Database.
+ * Location functionality excluded.
  */
 
 const DB = {
@@ -15,7 +16,7 @@ const DB = {
   },
 
   // ==========================================
-  // DEPARTMENTS & SHIFTS
+  // DEPARTMENTS
   // ==========================================
   async getDepartments() {
     if (!CONFIG.client) return [];
@@ -36,6 +37,31 @@ const DB = {
     }
   },
 
+  async addDepartment(departmentData) {
+    this.checkClient();
+    const { data, error } = await CONFIG.client
+      .from("departments")
+      .insert([departmentData])
+      .select();
+
+    if (error) throw new Error(error.message);
+    return data && data[0] ? data[0] : null;
+  },
+
+  async deleteDepartment(id) {
+    this.checkClient();
+    const { error } = await CONFIG.client
+      .from("departments")
+      .delete()
+      .eq("id", id);
+
+    if (error) throw new Error(error.message);
+    return true;
+  },
+
+  // ==========================================
+  // SHIFTS
+  // ==========================================
   async getShifts() {
     if (!CONFIG.client) return [];
     try {
@@ -53,6 +79,28 @@ const DB = {
       console.error("Failed to fetch shifts:", e);
       return [];
     }
+  },
+
+  async addShift(shiftData) {
+    this.checkClient();
+    const { data, error } = await CONFIG.client
+      .from("shifts")
+      .insert([shiftData])
+      .select();
+
+    if (error) throw new Error(error.message);
+    return data && data[0] ? data[0] : null;
+  },
+
+  async deleteShift(id) {
+    this.checkClient();
+    const { error } = await CONFIG.client
+      .from("shifts")
+      .delete()
+      .eq("id", id);
+
+    if (error) throw new Error(error.message);
+    return true;
   },
 
   // ==========================================
@@ -75,7 +123,7 @@ const DB = {
         ...emp,
         department_name: emp.departments?.name || "Unassigned",
         department_code: emp.departments?.code || "GEN",
-        shift_name: emp.shifts?.name || "General Day Shift",
+        shift_name: emp.shifts?.name || "Standard Shift",
         shift_start: emp.shifts?.start_time || "09:00:00",
         shift_end: emp.shifts?.end_time || "18:00:00"
       }));
@@ -101,7 +149,7 @@ const DB = {
         ...emp,
         department_name: emp.departments?.name || "Unassigned",
         department_code: emp.departments?.code || "GEN",
-        shift_name: emp.shifts?.name || "General Day Shift",
+        shift_name: emp.shifts?.name || "Standard Shift",
         shift_start: emp.shifts?.start_time || "09:00:00",
         shift_end: emp.shifts?.end_time || "18:00:00"
       };
@@ -116,6 +164,10 @@ const DB = {
     const supaData = { ...employeeData };
     delete supaData.id;
 
+    // Sanitize foreign keys if empty string
+    if (!supaData.department_id) delete supaData.department_id;
+    if (!supaData.shift_id) delete supaData.shift_id;
+
     const { data, error } = await CONFIG.client
       .from("employees")
       .insert([supaData])
@@ -129,6 +181,9 @@ const DB = {
     this.checkClient();
     const supaData = { ...updates };
     delete supaData.id;
+
+    if (!supaData.department_id) supaData.department_id = null;
+    if (!supaData.shift_id) supaData.shift_id = null;
 
     const { data, error } = await CONFIG.client
       .from("employees")
@@ -152,7 +207,7 @@ const DB = {
   },
 
   // ==========================================
-  // ATTENDANCE
+  // ATTENDANCE (No Location)
   // ==========================================
   async getAttendance(filters = {}) {
     if (!CONFIG.client) return [];
@@ -216,7 +271,7 @@ const DB = {
     }
   },
 
-  async clockIn({ employeeId, verificationPhoto, locationLat, locationLng, notes = "" }) {
+  async clockIn({ employeeId, verificationPhoto, notes = "" }) {
     this.checkClient();
     const today = new Date().toISOString().split("T")[0];
     const now = new Date();
@@ -250,9 +305,7 @@ const DB = {
       total_hours: 0,
       status: status,
       verification_photo: verificationPhoto || null,
-      location_lat: locationLat || null,
-      location_lng: locationLng || null,
-      notes: notes || (status === "late" ? "Late clock-in recorded" : "Kiosk verified punch-in"),
+      notes: notes || (status === "late" ? "Late clock-in recorded" : "Kiosk punch-in"),
       is_regularized: false
     };
 
@@ -270,7 +323,6 @@ const DB = {
     const today = new Date().toISOString().split("T")[0];
     const now = new Date();
 
-    // Query today's existing record for this employee
     const { data: existingList, error: fetchErr } = await CONFIG.client
       .from("attendance")
       .select("*")
@@ -384,7 +436,6 @@ const DB = {
     if (error) throw new Error(error.message);
     const leave = data && data[0] ? data[0] : null;
 
-    // If approved, create corresponding attendance records marked as on_leave
     if (leave && status === "approved") {
       try {
         const start = new Date(leave.start_date);
@@ -393,7 +444,6 @@ const DB = {
 
         while (cur <= end) {
           const dateStr = cur.toISOString().split("T")[0];
-          // Check day of week (skip weekends)
           const day = cur.getDay();
           if (day !== 0 && day !== 6) {
             await CONFIG.client.from("attendance").upsert([{
@@ -418,12 +468,12 @@ const DB = {
   },
 
   // ==========================================
-  // SETTINGS & BOOTSTRAP
+  // SETTINGS
   // ==========================================
   async getSettings() {
     if (!CONFIG.client) {
       return {
-        company_name: "Apex Enterprise",
+        company_name: "My Organization",
         office_start_time: "09:00:00",
         office_end_time: "18:00:00",
         grace_period_minutes: 15
@@ -438,14 +488,14 @@ const DB = {
 
       if (!error && data && data.length > 0) return data[0];
       return {
-        company_name: "Apex Enterprise",
+        company_name: "My Organization",
         office_start_time: "09:00:00",
         office_end_time: "18:00:00",
         grace_period_minutes: 15
       };
     } catch (e) {
       return {
-        company_name: "Apex Enterprise",
+        company_name: "My Organization",
         office_start_time: "09:00:00",
         office_end_time: "18:00:00",
         grace_period_minutes: 15
@@ -473,57 +523,6 @@ const DB = {
 
     if (error) throw new Error(error.message);
     return newSettings;
-  },
-
-  /**
-   * Bootstrap / Initialize New Database Structure
-   * Creates default organization settings, standard departments, and shifts
-   * if connected to a newly created database.
-   */
-  async bootstrapDatabase() {
-    this.checkClient();
-
-    const results = { departments: 0, shifts: 0, settings: false };
-
-    // 1. Ensure Organization Settings
-    const { data: settingsCheck } = await CONFIG.client.from("organization_settings").select("id").limit(1);
-    if (!settingsCheck || settingsCheck.length === 0) {
-      const { error: setErr } = await CONFIG.client.from("organization_settings").insert([{
-        company_name: "Apex Enterprise",
-        office_start_time: "09:00:00",
-        office_end_time: "18:00:00",
-        grace_period_minutes: 15
-      }]);
-      if (!setErr) results.settings = true;
-    }
-
-    // 2. Ensure Default Departments
-    const { data: deptCheck } = await CONFIG.client.from("departments").select("id").limit(1);
-    if (!deptCheck || deptCheck.length === 0) {
-      const defaultDepts = [
-        { name: "Engineering & Tech", code: "ENG", description: "Software development and infrastructure" },
-        { name: "Human Resources", code: "HR", description: "People operations and payroll" },
-        { name: "Product & Design", code: "PRD", description: "Product strategy and UI/UX design" },
-        { name: "Sales & Marketing", code: "MKT", description: "Business growth and client acquisition" },
-        { name: "Finance & Operations", code: "FIN", description: "Accounting and financial planning" }
-      ];
-      const { data: insertedDepts, error: dErr } = await CONFIG.client.from("departments").insert(defaultDepts).select();
-      if (!dErr && insertedDepts) results.departments = insertedDepts.length;
-    }
-
-    // 3. Ensure Default Shifts
-    const { data: shiftCheck } = await CONFIG.client.from("shifts").select("id").limit(1);
-    if (!shiftCheck || shiftCheck.length === 0) {
-      const defaultShifts = [
-        { name: "General Day Shift", start_time: "09:00:00", end_time: "18:00:00", grace_period_minutes: 15, half_day_hours: 4.0 },
-        { name: "Morning Shift", start_time: "07:30:00", end_time: "16:30:00", grace_period_minutes: 10, half_day_hours: 4.0 },
-        { name: "Evening Shift", start_time: "13:00:00", end_time: "22:00:00", grace_period_minutes: 15, half_day_hours: 4.0 }
-      ];
-      const { data: insertedShifts, error: sErr } = await CONFIG.client.from("shifts").insert(defaultShifts).select();
-      if (!sErr && insertedShifts) results.shifts = insertedShifts.length;
-    }
-
-    return results;
   }
 };
 

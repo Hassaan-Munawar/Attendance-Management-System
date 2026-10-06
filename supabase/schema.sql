@@ -44,7 +44,7 @@ CREATE TABLE IF NOT EXISTS employees (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
 );
 
--- 4. ATTENDANCE TABLE
+-- 4. ATTENDANCE TABLE (No location tracking)
 CREATE TABLE IF NOT EXISTS attendance (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     employee_id UUID NOT NULL REFERENCES employees(id) ON DELETE CASCADE,
@@ -55,9 +55,6 @@ CREATE TABLE IF NOT EXISTS attendance (
     total_hours NUMERIC(5, 2) DEFAULT 0.00,
     status VARCHAR(20) NOT NULL CHECK (status IN ('present', 'late', 'half_day', 'absent', 'on_leave')),
     verification_photo TEXT,
-    location_lat NUMERIC(10, 7),
-    location_lng NUMERIC(10, 7),
-    location_address TEXT,
     notes TEXT,
     is_regularized BOOLEAN DEFAULT FALSE,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL,
@@ -82,15 +79,11 @@ CREATE TABLE IF NOT EXISTS leave_requests (
 -- 6. COMPANY SETTINGS TABLE
 CREATE TABLE IF NOT EXISTS organization_settings (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    company_name VARCHAR(150) DEFAULT 'Apex Enterprise',
+    company_name VARCHAR(150) DEFAULT 'My Organization',
     office_start_time TIME DEFAULT '09:00:00',
     office_end_time TIME DEFAULT '18:00:00',
     grace_period_minutes INTEGER DEFAULT 15,
     allow_camera_snapshot BOOLEAN DEFAULT TRUE,
-    allow_geolocation BOOLEAN DEFAULT TRUE,
-    office_lat NUMERIC(10, 7) DEFAULT 40.7128000,
-    office_lng NUMERIC(10, 7) DEFAULT -74.0060000,
-    geofence_radius_meters INTEGER DEFAULT 500,
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
 );
 
@@ -115,7 +108,6 @@ ALTER TABLE attendance ENABLE ROW LEVEL SECURITY;
 ALTER TABLE leave_requests ENABLE ROW LEVEL SECURITY;
 ALTER TABLE organization_settings ENABLE ROW LEVEL SECURITY;
 
--- Allow anon read/write
 CREATE POLICY "Allow anon read departments" ON departments FOR SELECT USING (true);
 CREATE POLICY "Allow anon write departments" ON departments FOR ALL USING (true);
 
@@ -138,24 +130,3 @@ CREATE POLICY "Allow anon write settings" ON organization_settings FOR ALL USING
 ALTER PUBLICATION supabase_realtime ADD TABLE attendance;
 ALTER PUBLICATION supabase_realtime ADD TABLE leave_requests;
 ALTER PUBLICATION supabase_realtime ADD TABLE employees;
-
--- ==============================================================================
--- DEFAULT INITIAL SETUP (SETTINGS, STANDARD DEPARTMENTS & SHIFT)
--- ==============================================================================
-INSERT INTO organization_settings (company_name, office_start_time, office_end_time, grace_period_minutes)
-VALUES ('Apex Enterprise', '09:00:00', '18:00:00', 15)
-ON CONFLICT DO NOTHING;
-
-INSERT INTO departments (name, code, description) VALUES
-('Engineering & Tech', 'ENG', 'Software engineering, DevOps, QA'),
-('Human Resources', 'HR', 'People operations and talent acquisition'),
-('Product & Design', 'PRD', 'Product management and UI/UX design'),
-('Sales & Marketing', 'MKT', 'Client development and marketing'),
-('Finance & Operations', 'FIN', 'Finance, accounting, and legal')
-ON CONFLICT (code) DO NOTHING;
-
-INSERT INTO shifts (name, start_time, end_time, grace_period_minutes, half_day_hours) VALUES
-('General Day Shift', '09:00:00', '18:00:00', 15, 4.0),
-('Morning Shift', '07:30:00', '16:30:00', 10, 4.0),
-('Evening Shift', '13:00:00', '22:00:00', 15, 4.0)
-ON CONFLICT DO NOTHING;

@@ -1,12 +1,11 @@
 /**
  * Attendance Operations & Kiosk Controller
- * Manages live clock-in/out, camera photo capture, geolocation, and daily logs
+ * Manages live clock-in/out, facial photo capture, PIN verification, and daily logs
  */
 
 const AttendanceModule = {
   currentStream: null,
   capturedPhotoBase64: null,
-  currentLocation: { lat: null, lng: null, accuracy: null },
   activeEmployee: null,
   clockTimer: null,
 
@@ -118,38 +117,6 @@ const AttendanceModule = {
       console.warn("Could not capture snapshot:", e);
       return null;
     }
-  },
-
-  detectGeolocation() {
-    const locBadge = document.getElementById("kiosk-geo-badge");
-    if (!navigator.geolocation) {
-      if (locBadge) locBadge.innerHTML = `<i class="fa-solid fa-location-crosshairs text-amber-400"></i> GPS Unsupported`;
-      return;
-    }
-
-    if (locBadge) locBadge.innerHTML = `<i class="fa-solid fa-spinner fa-spin text-indigo-400"></i> Locating...`;
-
-    navigator.geolocation.getCurrentPosition(
-      pos => {
-        this.currentLocation = {
-          lat: pos.coords.latitude,
-          lng: pos.coords.longitude,
-          accuracy: Math.round(pos.coords.accuracy)
-        };
-        if (locBadge) {
-          locBadge.className = "px-2.5 py-1 rounded-full text-xs font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 flex items-center gap-1.5";
-          locBadge.innerHTML = `<i class="fa-solid fa-location-dot text-emerald-400"></i> GPS Verified (±${this.currentLocation.accuracy}m)`;
-        }
-      },
-      err => {
-        console.warn("Geolocation skipped:", err.message);
-        if (locBadge) {
-          locBadge.className = "px-2.5 py-1 rounded-full text-xs font-medium bg-slate-800 text-slate-400 border border-slate-700 flex items-center gap-1.5";
-          locBadge.innerHTML = `<i class="fa-solid fa-building text-slate-400"></i> Office Geofence Default`;
-        }
-      },
-      { timeout: 8000 }
-    );
   },
 
   // ==========================================
@@ -296,8 +263,6 @@ const AttendanceModule = {
       const result = await DB.clockIn({
         employeeId: this.activeEmployee.id,
         verificationPhoto: photo,
-        locationLat: this.currentLocation.lat,
-        locationLng: this.currentLocation.lng,
         notes: "Kiosk terminal check-in"
       });
 
@@ -322,7 +287,7 @@ const AttendanceModule = {
             <div><span class="text-slate-500 dark:text-slate-400">Employee:</span> <span class="font-semibold">${this.activeEmployee.first_name} ${this.activeEmployee.last_name}</span></div>
             <div><span class="text-slate-500 dark:text-slate-400">Timestamp:</span> <span class="font-semibold">${new Date().toLocaleTimeString()}</span></div>
             <div><span class="text-slate-500 dark:text-slate-400">Status:</span> <span class="font-semibold capitalize text-${isLate ? 'amber-500' : 'emerald-500'}">${result.record.status}</span></div>
-            <div><span class="text-slate-500 dark:text-slate-400">Verification:</span> <span class="font-semibold text-indigo-500">Biometric & GPS Validated</span></div>
+            <div><span class="text-slate-500 dark:text-slate-400">Verification:</span> <span class="font-semibold text-indigo-500">Biometric Verified</span></div>
           </div>
         `,
         confirmButtonColor: "#4f46e5"
@@ -662,9 +627,6 @@ const AttendanceModule = {
 
     // Populate dynamic departments from Supabase
     this.populateDepartmentFilter();
-
-    // Detect GPS location at startup
-    this.detectGeolocation();
   },
 
   async populateDepartmentFilter() {

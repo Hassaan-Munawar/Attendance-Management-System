@@ -111,9 +111,23 @@ div:where(.swal2-icon).swal2-success {
   color: #10b981 !important;
 }
 
-div:where(.swal2-icon).swal2-error {
-  border-color: #ef4444 !important;
-  color: #ef4444 !important;
+/* Mobile Optimization */
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+@media (max-width: 640px) {
+  /* Prevents iOS automatic zoom on focus while retaining clean appearance */
+  input[type="text"],
+  input[type="password"],
+  input[type="email"],
+  input[type="date"],
+  input[type="time"],
+  input[type="number"],
+  select,
+  textarea {
+    font-size: 16px !important;
+  }
 }
 
 /* ==============================================================================

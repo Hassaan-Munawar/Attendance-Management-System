@@ -2,7 +2,7 @@
 <html lang="en" class="dark">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>Apex Attendance - Enterprise Attendance Management System</title>
 
   <!-- Tailwind CSS CDN -->
@@ -43,65 +43,74 @@
 </head>
 <body class="bg-[#090d16] text-slate-100 min-h-screen flex antialiased selection:bg-indigo-500 selection:text-white">
 
+  <!-- Mobile Backdrop Overlay -->
+  <div id="sidebar-backdrop" class="hidden fixed inset-0 z-40 bg-black/70 backdrop-blur-sm md:hidden transition-opacity"></div>
+
   <!-- ==============================================================================
        APP SIDEBAR (Desktop Fixed, Mobile Slide-over)
        ============================================================================== -->
   <aside id="app-sidebar"
-         class="fixed inset-y-0 left-0 z-50 w-64 bg-slate-900/95 border-r border-slate-800 backdrop-blur-xl flex flex-col justify-between transition-transform duration-300 ease-in-out md:translate-x-0 -translate-x-full">
+         class="fixed inset-y-0 left-0 z-50 w-64 bg-slate-900/98 border-r border-slate-800 backdrop-blur-xl flex flex-col justify-between transition-transform duration-300 ease-in-out md:translate-x-0 -translate-x-full shadow-2xl md:shadow-none">
     <div>
       <!-- Brand Logo Header -->
-      <div class="h-16 flex items-center gap-3 px-6 border-b border-slate-800/80">
-        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-600 to-violet-500 flex items-center justify-center text-white shadow-lg shadow-indigo-500/25">
-          <i class="fa-solid fa-fingerprint text-xl"></i>
+      <div class="h-16 flex items-center justify-between px-5 border-b border-slate-800/80">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-600 to-violet-500 flex items-center justify-center text-white shadow-lg shadow-indigo-500/25 flex-shrink-0">
+            <i class="fa-solid fa-fingerprint text-xl"></i>
+          </div>
+          <div>
+            <h1 class="font-extrabold text-sm sm:text-base tracking-tight text-white flex items-center gap-1.5 company-brand-name">
+              Apex Attendance
+            </h1>
+            <span class="text-[10px] font-mono uppercase tracking-widest text-indigo-400 font-semibold">Supabase Native</span>
+          </div>
         </div>
-        <div>
-          <h1 class="font-extrabold text-base tracking-tight text-white flex items-center gap-1.5 company-brand-name">
-            Apex Attendance
-          </h1>
-          <span class="text-[10px] font-mono uppercase tracking-widest text-indigo-400 font-semibold">Supabase Native</span>
-        </div>
+        <!-- Close button for mobile -->
+        <button id="mobile-menu-close" class="md:hidden p-2 text-slate-400 hover:text-white rounded-lg focus:outline-none" aria-label="Close sidebar">
+          <i class="fa-solid fa-xmark text-lg"></i>
+        </button>
       </div>
 
       <!-- Navigation Links -->
       <nav class="p-4 space-y-1.5" id="sidebar-nav">
         <a href="#dashboard" data-view="dashboard"
-           class="nav-link flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold transition-all bg-indigo-600 text-white shadow-lg shadow-indigo-500/20">
+           class="nav-link flex items-center gap-3 px-3.5 py-3 md:py-2.5 rounded-xl text-sm font-semibold transition-all bg-indigo-600 text-white shadow-lg shadow-indigo-500/20 active:scale-98">
           <i class="fa-solid fa-chart-pie w-5 text-center text-base"></i>
           <span>Dashboard</span>
         </a>
 
         <a href="#kiosk" data-view="kiosk"
-           class="nav-link flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold transition-all text-slate-400 hover:bg-slate-800/70 hover:text-slate-200">
+           class="nav-link flex items-center gap-3 px-3.5 py-3 md:py-2.5 rounded-xl text-sm font-semibold transition-all text-slate-400 hover:bg-slate-800/70 hover:text-slate-200 active:scale-98">
           <i class="fa-solid fa-stopwatch w-5 text-center text-base"></i>
           <span>Clock In / Out Kiosk</span>
         </a>
 
         <a href="#attendance" data-view="attendance"
-           class="nav-link flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold transition-all text-slate-400 hover:bg-slate-800/70 hover:text-slate-200">
+           class="nav-link flex items-center gap-3 px-3.5 py-3 md:py-2.5 rounded-xl text-sm font-semibold transition-all text-slate-400 hover:bg-slate-800/70 hover:text-slate-200 active:scale-98">
           <i class="fa-solid fa-clipboard-user w-5 text-center text-base"></i>
           <span>Daily Attendance</span>
         </a>
 
         <a href="#employees" data-view="employees"
-           class="nav-link flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold transition-all text-slate-400 hover:bg-slate-800/70 hover:text-slate-200">
+           class="nav-link flex items-center gap-3 px-3.5 py-3 md:py-2.5 rounded-xl text-sm font-semibold transition-all text-slate-400 hover:bg-slate-800/70 hover:text-slate-200 active:scale-98">
           <i class="fa-solid fa-user-group w-5 text-center text-base"></i>
           <span>Employees</span>
         </a>
 
         <a href="#leaves" data-view="leaves"
-           class="nav-link flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold transition-all text-slate-400 hover:bg-slate-800/70 hover:text-slate-200">
+           class="nav-link flex items-center gap-3 px-3.5 py-3 md:py-2.5 rounded-xl text-sm font-semibold transition-all text-slate-400 hover:bg-slate-800/70 hover:text-slate-200 active:scale-98">
           <i class="fa-solid fa-calendar-minus w-5 text-center text-base"></i>
           <span>Leave Management</span>
         </a>
 
         <a href="#reports" data-view="reports"
-           class="nav-link flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold transition-all text-slate-400 hover:bg-slate-800/70 hover:text-slate-200">
+           class="nav-link flex items-center gap-3 px-3.5 py-3 md:py-2.5 rounded-xl text-sm font-semibold transition-all text-slate-400 hover:bg-slate-800/70 hover:text-slate-200 active:scale-98">
           <i class="fa-solid fa-file-excel w-5 text-center text-base"></i>
           <span>Timesheet & Export</span>
         </a>
 
         <a href="#settings" data-view="settings"
-           class="nav-link flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold transition-all text-slate-400 hover:bg-slate-800/70 hover:text-slate-200">
+           class="nav-link flex items-center gap-3 px-3.5 py-3 md:py-2.5 rounded-xl text-sm font-semibold transition-all text-slate-400 hover:bg-slate-800/70 hover:text-slate-200 active:scale-98">
           <i class="fa-solid fa-database w-5 text-center text-base"></i>
           <span>Database & Config</span>
         </a>
@@ -111,14 +120,14 @@
     <!-- User Profile Footer in Sidebar -->
     <div class="p-4 border-t border-slate-800/80">
       <div class="bg-slate-800/50 rounded-xl p-3 flex items-center gap-3 border border-slate-700/50">
-        <div class="w-9 h-9 rounded-full bg-gradient-to-tr from-indigo-500 to-violet-600 flex items-center justify-center font-bold text-white text-xs shadow-sm">
+        <div class="w-9 h-9 rounded-full bg-gradient-to-tr from-indigo-500 to-violet-600 flex items-center justify-center font-bold text-white text-xs shadow-sm flex-shrink-0">
           <i class="fa-solid fa-user-shield"></i>
         </div>
         <div class="truncate flex-1">
           <div class="font-bold text-xs text-slate-200 truncate">HR Administrator</div>
           <div class="text-[10px] text-slate-400 truncate">System Manager</div>
         </div>
-        <button onclick="App.switchView('settings')" class="text-slate-400 hover:text-indigo-400 transition" title="Database Configuration">
+        <button onclick="App.switchView('settings')" class="text-slate-400 hover:text-indigo-400 p-1.5 transition" title="Database Configuration">
           <i class="fa-solid fa-gear text-sm"></i>
         </button>
       </div>
@@ -128,50 +137,51 @@
   <!-- ==============================================================================
        MAIN APPLICATION WRAPPER
        ============================================================================== -->
-  <div class="flex-1 md:ml-64 flex flex-col min-h-screen">
+  <div class="flex-1 md:ml-64 flex flex-col min-h-screen w-full overflow-x-hidden">
 
     <!-- Top Navigation Header -->
-    <header class="h-16 bg-slate-900/60 border-b border-slate-800/80 backdrop-blur-md sticky top-0 z-40 px-6 flex items-center justify-between">
+    <header class="h-16 bg-slate-900/80 border-b border-slate-800/80 backdrop-blur-md sticky top-0 z-30 px-4 sm:px-6 flex items-center justify-between">
       <div class="flex items-center gap-3">
-        <button id="mobile-menu-btn" class="md:hidden p-2 text-slate-400 hover:text-white rounded-lg focus:outline-none">
-          <i class="fa-solid fa-bars text-lg"></i>
+        <!-- Hamburger Menu Button -->
+        <button id="mobile-menu-btn" class="md:hidden w-10 h-10 flex items-center justify-center text-slate-300 hover:text-white bg-slate-800/80 border border-slate-700/80 rounded-xl active:bg-slate-700 transition" aria-label="Open navigation menu">
+          <i class="fa-solid fa-bars text-base"></i>
         </button>
-        <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider hidden sm:inline-block">Live System Status</span>
+        <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider hidden sm:inline-block">Attendance Dashboard</span>
       </div>
 
       <!-- Header Right: Connection status badge & quick action -->
-      <div class="flex items-center gap-3">
+      <div class="flex items-center gap-2 sm:gap-3">
         <!-- Live Connection Mode Badge -->
-        <div id="header-connection-badge" class="px-3 py-1.5 rounded-full text-xs font-semibold bg-amber-500/10 text-amber-400 border border-amber-500/20 flex items-center gap-2 cursor-pointer hover:bg-amber-500/20 transition">
+        <div id="header-connection-badge" class="px-2.5 sm:px-3 py-1.5 rounded-full text-[11px] sm:text-xs font-semibold bg-amber-500/10 text-amber-400 border border-amber-500/20 flex items-center gap-1.5 sm:gap-2 cursor-pointer hover:bg-amber-500/20 transition">
           <span class="w-2 h-2 rounded-full bg-amber-400"></span>
-          <span>Connecting...</span>
+          <span class="truncate max-w-[130px] sm:max-w-none">Connecting...</span>
         </div>
 
         <!-- Quick Launch Kiosk Button -->
         <button onclick="App.switchView('kiosk')"
-                class="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-semibold bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white shadow-md shadow-indigo-500/20 transition">
+                class="flex items-center gap-1.5 sm:gap-2 px-3 py-1.5 rounded-lg text-xs font-semibold bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white shadow-md shadow-indigo-500/20 active:scale-95 transition">
           <i class="fa-solid fa-stopwatch"></i>
-          <span>Clock In / Out</span>
+          <span class="hidden xs:inline">Clock In / Out</span>
         </button>
       </div>
     </header>
 
     <!-- Main Content Container -->
-    <main class="flex-1 p-6 md:p-8 max-w-7xl w-full mx-auto space-y-6">
+    <main class="flex-1 p-4 sm:p-6 md:p-8 max-w-7xl w-full mx-auto space-y-6">
 
       <!-- Unconfigured Alert Banner (shown when Supabase URL/Key missing) -->
-      <div id="unconfigured-alert-banner" class="hidden glass-panel rounded-2xl p-4 border border-amber-500/30 bg-amber-500/10 flex items-center justify-between gap-4">
-        <div class="flex items-center gap-3">
+      <div id="unconfigured-alert-banner" class="hidden glass-panel rounded-2xl p-4 border border-amber-500/30 bg-amber-500/10 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div class="flex items-start sm:items-center gap-3">
           <div class="w-10 h-10 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center text-lg flex-shrink-0">
             <i class="fa-solid fa-triangle-exclamation"></i>
           </div>
           <div>
-            <h4 class="font-bold text-sm text-amber-300">Supabase Database Connection Required</h4>
-            <p class="text-xs text-amber-200/80">Enter your Supabase Project URL and Anon Key to retrieve existing personnel records or bootstrap a new database.</p>
+            <h4 class="font-bold text-sm text-amber-300">Supabase Connection Required</h4>
+            <p class="text-xs text-amber-200/80 mt-0.5">Please provide your Supabase Project URL and Anon Key in Database Configuration.</p>
           </div>
         </div>
-        <button onclick="App.switchView('settings')" class="px-4 py-2 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs rounded-xl shadow-md transition flex-shrink-0">
-          Configure Supabase Now
+        <button onclick="App.switchView('settings')" class="w-full sm:w-auto px-4 py-2 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs rounded-xl shadow-md transition flex-shrink-0 text-center">
+          Configure Database
         </button>
       </div>
 
@@ -182,51 +192,51 @@
         <!-- Header Banner -->
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
-            <h2 class="text-2xl font-bold tracking-tight text-white">Attendance Overview</h2>
-            <p class="text-sm text-slate-400 mt-1">Workforce attendance, punctuality trends, and active shifts</p>
+            <h2 class="text-xl sm:text-2xl font-bold tracking-tight text-white">Attendance Overview</h2>
+            <p class="text-xs sm:text-sm text-slate-400 mt-1">Live workforce attendance and punctuality metrics</p>
           </div>
           <div class="flex items-center gap-2">
             <button onclick="App.switchView('attendance')"
-                    class="px-3.5 py-2 text-xs font-semibold rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 transition flex items-center gap-2">
-              <i class="fa-solid fa-list-check"></i> View Daily Logs
+                    class="flex-1 sm:flex-none justify-center px-3.5 py-2 text-xs font-semibold rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 transition flex items-center gap-2">
+              <i class="fa-solid fa-list-check"></i> <span>Daily Logs</span>
             </button>
             <button onclick="App.switchView('kiosk')"
-                    class="px-3.5 py-2 text-xs font-semibold rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white shadow-lg shadow-indigo-600/25 transition flex items-center gap-2">
-              <i class="fa-solid fa-qrcode"></i> Clock Kiosk Terminal
+                    class="flex-1 sm:flex-none justify-center px-3.5 py-2 text-xs font-semibold rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white shadow-lg shadow-indigo-600/25 transition flex items-center gap-2">
+              <i class="fa-solid fa-qrcode"></i> <span>Kiosk</span>
             </button>
           </div>
         </div>
 
         <!-- Key Performance Indicator Cards (KPIs) -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
           <!-- Total Employees -->
-          <div class="glass-panel rounded-2xl p-5 border border-slate-800 relative overflow-hidden">
+          <div class="glass-panel rounded-2xl p-4 sm:p-5 border border-slate-800 relative overflow-hidden">
             <div class="flex items-center justify-between">
               <div>
                 <p class="text-xs font-bold uppercase tracking-wider text-slate-400">Total Staff</p>
-                <h3 id="kpi-total-staff" class="text-3xl font-extrabold text-white mt-1">0</h3>
+                <h3 id="kpi-total-staff" class="text-2xl sm:text-3xl font-extrabold text-white mt-1">0</h3>
               </div>
-              <div class="w-12 h-12 rounded-xl bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 flex items-center justify-center text-xl">
+              <div class="w-11 h-11 rounded-xl bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 flex items-center justify-center text-lg">
                 <i class="fa-solid fa-users"></i>
               </div>
             </div>
-            <div class="mt-4 flex items-center text-xs text-slate-400">
+            <div class="mt-3 flex items-center text-xs text-slate-400">
               <span class="text-indigo-400 font-semibold mr-1.5"><i class="fa-solid fa-id-badge"></i> Profiles:</span> Active in Database
             </div>
           </div>
 
           <!-- Present Today -->
-          <div class="glass-panel rounded-2xl p-5 border border-slate-800 relative overflow-hidden">
+          <div class="glass-panel rounded-2xl p-4 sm:p-5 border border-slate-800 relative overflow-hidden">
             <div class="flex items-center justify-between">
               <div>
                 <p class="text-xs font-bold uppercase tracking-wider text-slate-400">Present Today</p>
-                <h3 id="kpi-present-today" class="text-3xl font-extrabold text-emerald-400 mt-1">0</h3>
+                <h3 id="kpi-present-today" class="text-2xl sm:text-3xl font-extrabold text-emerald-400 mt-1">0</h3>
               </div>
-              <div class="w-12 h-12 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 flex items-center justify-center text-xl">
+              <div class="w-11 h-11 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 flex items-center justify-center text-lg">
                 <i class="fa-solid fa-user-check"></i>
               </div>
             </div>
-            <div class="mt-4 flex items-center justify-between text-xs">
+            <div class="mt-3 flex items-center justify-between text-xs">
               <span class="text-slate-400">Attendance Rate</span>
               <span id="kpi-attendance-rate" class="font-bold text-emerald-400">0%</span>
             </div>
@@ -236,93 +246,93 @@
           </div>
 
           <!-- Late Arrivals -->
-          <div class="glass-panel rounded-2xl p-5 border border-slate-800 relative overflow-hidden">
+          <div class="glass-panel rounded-2xl p-4 sm:p-5 border border-slate-800 relative overflow-hidden">
             <div class="flex items-center justify-between">
               <div>
                 <p class="text-xs font-bold uppercase tracking-wider text-slate-400">Late Arrivals</p>
-                <h3 id="kpi-late-today" class="text-3xl font-extrabold text-amber-400 mt-1">0</h3>
+                <h3 id="kpi-late-today" class="text-2xl sm:text-3xl font-extrabold text-amber-400 mt-1">0</h3>
               </div>
-              <div class="w-12 h-12 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-400 flex items-center justify-center text-xl">
+              <div class="w-11 h-11 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-400 flex items-center justify-center text-lg">
                 <i class="fa-solid fa-clock-rotate-left"></i>
               </div>
             </div>
-            <div class="mt-4 flex items-center text-xs text-slate-400">
+            <div class="mt-3 flex items-center text-xs text-slate-400">
               <span class="text-amber-400 font-semibold mr-1.5"><i class="fa-solid fa-triangle-exclamation"></i> Shift:</span> Exceeded Grace
             </div>
           </div>
 
           <!-- On Leave / Absent -->
-          <div class="glass-panel rounded-2xl p-5 border border-slate-800 relative overflow-hidden">
+          <div class="glass-panel rounded-2xl p-4 sm:p-5 border border-slate-800 relative overflow-hidden">
             <div class="flex items-center justify-between">
               <div>
                 <p class="text-xs font-bold uppercase tracking-wider text-slate-400">Approved Leave</p>
-                <h3 id="kpi-leaves-today" class="text-3xl font-extrabold text-purple-400 mt-1">0</h3>
+                <h3 id="kpi-leaves-today" class="text-2xl sm:text-3xl font-extrabold text-purple-400 mt-1">0</h3>
               </div>
-              <div class="w-12 h-12 rounded-xl bg-purple-500/10 border border-purple-500/20 text-purple-400 flex items-center justify-center text-xl">
+              <div class="w-11 h-11 rounded-xl bg-purple-500/10 border border-purple-500/20 text-purple-400 flex items-center justify-center text-lg">
                 <i class="fa-solid fa-calendar-xmark"></i>
               </div>
             </div>
-            <div class="mt-4 flex items-center text-xs text-slate-400">
-              <span class="text-purple-400 font-semibold mr-1.5"><i class="fa-solid fa-plane-departure"></i> Approved:</span> Authorized Absence
+            <div class="mt-3 flex items-center text-xs text-slate-400">
+              <span class="text-purple-400 font-semibold mr-1.5"><i class="fa-solid fa-plane-departure"></i> Vacation:</span> Authorized Absence
             </div>
           </div>
         </div>
 
         <!-- Charts Grid -->
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
           <!-- 10-Day Attendance Trends (2 Columns) -->
-          <div class="lg:col-span-2 glass-panel rounded-2xl p-5 border border-slate-800 flex flex-col justify-between">
+          <div class="lg:col-span-2 glass-panel rounded-2xl p-4 sm:p-5 border border-slate-800 flex flex-col justify-between">
             <div class="flex items-center justify-between mb-4">
               <div>
-                <h3 class="font-bold text-base text-white">Attendance Trends</h3>
+                <h3 class="font-bold text-sm sm:text-base text-white">Attendance Trends</h3>
                 <p class="text-xs text-slate-400 mt-0.5">Attendance compliance over previous 10 business days</p>
               </div>
               <span class="px-2.5 py-1 rounded-lg text-xs bg-slate-800 text-slate-300 font-medium border border-slate-700">10 Days</span>
             </div>
-            <div class="h-64 w-full">
+            <div class="h-56 sm:h-64 w-full">
               <canvas id="attendanceTrendChart"></canvas>
             </div>
           </div>
 
           <!-- Today's Punctuality Status (1 Column Doughnut) -->
-          <div class="glass-panel rounded-2xl p-5 border border-slate-800 flex flex-col justify-between">
+          <div class="glass-panel rounded-2xl p-4 sm:p-5 border border-slate-800 flex flex-col justify-between">
             <div class="flex items-center justify-between mb-3">
               <div>
-                <h3 class="font-bold text-base text-white">Today's Distribution</h3>
+                <h3 class="font-bold text-sm sm:text-base text-white">Today's Distribution</h3>
                 <p class="text-xs text-slate-400 mt-0.5">Live status breakdown</p>
               </div>
             </div>
-            <div class="h-64 w-full relative">
+            <div class="h-56 sm:h-64 w-full relative">
               <canvas id="attendanceDistributionChart"></canvas>
             </div>
           </div>
         </div>
 
         <!-- Lower Section: Department Performance + Real-Time Punch Feed -->
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
           <!-- Department Performance (2 Columns) -->
-          <div class="lg:col-span-2 glass-panel rounded-2xl p-5 border border-slate-800">
+          <div class="lg:col-span-2 glass-panel rounded-2xl p-4 sm:p-5 border border-slate-800">
             <div class="flex items-center justify-between mb-4">
               <div>
-                <h3 class="font-bold text-base text-white">Department Compliance Performance</h3>
+                <h3 class="font-bold text-sm sm:text-base text-white">Department Compliance Performance</h3>
                 <p class="text-xs text-slate-400 mt-0.5">Attendance rate grouped by organizational division</p>
               </div>
             </div>
-            <div class="h-56 w-full">
+            <div class="h-52 sm:h-56 w-full">
               <canvas id="departmentAttendanceChart"></canvas>
             </div>
           </div>
 
           <!-- Live Punch Activity Feed (1 Column) -->
-          <div class="glass-panel rounded-2xl p-5 border border-slate-800">
+          <div class="glass-panel rounded-2xl p-4 sm:p-5 border border-slate-800">
             <div class="flex items-center justify-between mb-3 border-b border-slate-800 pb-3">
-              <h3 class="font-bold text-base text-white flex items-center gap-2">
+              <h3 class="font-bold text-sm sm:text-base text-white flex items-center gap-2">
                 <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
                 <span>Today's Clock Activity</span>
               </h3>
               <span class="text-[10px] text-slate-500 uppercase tracking-widest font-mono">Live Feed</span>
             </div>
-            <div id="dashboard-activity-feed" class="space-y-1">
+            <div id="dashboard-activity-feed" class="space-y-1 max-h-56 overflow-y-auto">
               <!-- Dynamically populated -->
             </div>
           </div>
@@ -330,75 +340,75 @@
       </section>
 
       <!-- ==========================================================================
-           VIEW 2: KIOSK CLOCK-IN / OUT TERMINAL
+           VIEW 2: KIOSK CLOCK-IN / OUT TERMINAL (No Location Tracking)
            ========================================================================== -->
       <section id="view-kiosk" class="view-section hidden space-y-6">
         <div class="max-w-4xl mx-auto">
           <!-- Digital Clock Display Card -->
-          <div class="glass-panel rounded-3xl p-8 border border-slate-800 text-center relative overflow-hidden shadow-2xl">
+          <div class="glass-panel rounded-2xl sm:rounded-3xl p-6 sm:p-8 border border-slate-800 text-center relative overflow-hidden shadow-2xl">
             <div class="absolute -top-24 -left-24 w-72 h-72 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none"></div>
             <div class="absolute -bottom-24 -right-24 w-72 h-72 bg-violet-500/10 rounded-full blur-3xl pointer-events-none"></div>
 
             <div class="flex items-center justify-center gap-2 mb-2">
-              <span id="kiosk-geo-badge" class="px-3 py-1 rounded-full text-xs font-medium bg-slate-800 text-slate-400 border border-slate-700 flex items-center gap-1.5">
-                <i class="fa-solid fa-location-dot"></i> GPS Active
+              <span class="px-3 py-1 rounded-full text-xs font-medium bg-slate-800 text-slate-300 border border-slate-700 flex items-center gap-1.5">
+                <i class="fa-regular fa-clock text-indigo-400"></i> Live Terminal Clock
               </span>
               <span class="px-3 py-1 rounded-full text-xs font-medium bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">
-                <i class="fa-solid fa-shield-halved"></i> Biometric Attendance Terminal
+                <i class="fa-solid fa-shield-halved"></i> Biometric Verified
               </span>
             </div>
 
-            <!-- Massive Digital Clock -->
-            <div class="my-4">
-              <div class="flex items-baseline justify-center">
-                <span id="kiosk-live-time" class="text-6xl md:text-7xl font-extrabold tracking-tight text-white clock-display font-mono">09:00</span>
-                <span id="kiosk-live-sec" class="text-2xl md:text-3xl font-bold text-indigo-400 ml-2 font-mono">:00 AM</span>
+            <!-- Massive Digital Clock (Optimized for Mobile) -->
+            <div class="my-3 sm:my-4">
+              <div class="flex items-baseline justify-center flex-wrap">
+                <span id="kiosk-live-time" class="text-5xl sm:text-6xl md:text-7xl font-extrabold tracking-tight text-white clock-display font-mono">09:00</span>
+                <span id="kiosk-live-sec" class="text-xl sm:text-2xl md:text-3xl font-bold text-indigo-400 ml-2 font-mono">:00 AM</span>
               </div>
-              <p id="kiosk-live-date" class="text-sm font-medium text-slate-400 mt-2">Loading date...</p>
+              <p id="kiosk-live-date" class="text-xs sm:text-sm font-medium text-slate-400 mt-2">Loading date...</p>
             </div>
           </div>
 
           <!-- Kiosk Interactive Workspace -->
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 mt-4 sm:mt-6">
 
             <!-- Left: Camera Verification & Hardware Capture -->
-            <div class="glass-panel rounded-2xl p-5 border border-slate-800 flex flex-col justify-between">
+            <div class="glass-panel rounded-2xl p-4 sm:p-5 border border-slate-800 flex flex-col justify-between">
               <div>
                 <div class="flex items-center justify-between mb-3">
-                  <h3 class="font-bold text-sm text-slate-200 flex items-center gap-2">
-                    <i class="fa-solid fa-camera text-indigo-400"></i> Facial Snapshot Verification
+                  <h3 class="font-bold text-xs sm:text-sm text-slate-200 flex items-center gap-2">
+                    <i class="fa-solid fa-camera text-indigo-400"></i> Facial Verification (Optional)
                   </h3>
                   <div class="flex items-center gap-2">
-                    <button id="btn-start-cam" class="px-2.5 py-1 text-xs font-semibold bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg transition">
-                      <i class="fa-solid fa-video mr-1"></i> Start Camera
+                    <button id="btn-start-cam" class="px-2.5 py-1 text-xs font-semibold bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg transition active:scale-95">
+                      <i class="fa-solid fa-video mr-1"></i> Start Cam
                     </button>
-                    <button id="btn-stop-cam" class="hidden px-2.5 py-1 text-xs font-semibold bg-rose-600 hover:bg-rose-500 text-white rounded-lg transition">
-                      <i class="fa-solid fa-video-slash mr-1"></i> Stop Camera
+                    <button id="btn-stop-cam" class="hidden px-2.5 py-1 text-xs font-semibold bg-rose-600 hover:bg-rose-500 text-white rounded-lg transition active:scale-95">
+                      <i class="fa-solid fa-video-slash mr-1"></i> Stop Cam
                     </button>
                   </div>
                 </div>
 
                 <!-- Webcam Video or Placeholder Container -->
-                <div class="w-full h-56 rounded-xl bg-slate-950 border border-slate-800 relative flex items-center justify-center overflow-hidden">
+                <div class="w-full h-48 sm:h-56 rounded-xl bg-slate-950 border border-slate-800 relative flex items-center justify-center overflow-hidden">
                   <video id="kiosk-webcam" autoplay playsinline class="hidden w-full h-full object-cover"></video>
-                  <div id="camera-placeholder" class="text-center p-6">
-                    <div class="w-14 h-14 rounded-full bg-slate-900 border border-slate-800 flex items-center justify-center text-slate-500 text-2xl mx-auto mb-2">
+                  <div id="camera-placeholder" class="text-center p-4 sm:p-6">
+                    <div class="w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-slate-900 border border-slate-800 flex items-center justify-center text-slate-500 text-xl sm:text-2xl mx-auto mb-2">
                       <i class="fa-solid fa-camera"></i>
                     </div>
                     <p class="text-xs font-semibold text-slate-300">Camera Inactive</p>
-                    <p class="text-[11px] text-slate-500 mt-0.5">Click "Start Camera" above for live verification snapshot</p>
+                    <p class="text-[11px] text-slate-500 mt-0.5">Click "Start Cam" for photo snapshot verification</p>
                   </div>
                 </div>
               </div>
 
               <div class="mt-4 pt-3 border-t border-slate-800/80 flex items-center justify-between text-xs text-slate-400">
-                <span>Verification: <b class="text-slate-300">Biometric + Geolocation</b></span>
-                <span>Audit: <b class="text-indigo-400">Supabase Logged</b></span>
+                <span>Verification: <b class="text-slate-300">Facial Snapshot & PIN</b></span>
+                <span>Audit: <b class="text-indigo-400">Supabase Cloud</b></span>
               </div>
             </div>
 
             <!-- Right: Employee Identification & Action Buttons -->
-            <div class="glass-panel rounded-2xl p-5 border border-slate-800 flex flex-col justify-between">
+            <div class="glass-panel rounded-2xl p-4 sm:p-5 border border-slate-800 flex flex-col justify-between">
               <div>
                 <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">
                   Select Employee / Scan Badge
@@ -411,10 +421,10 @@
                 <div id="kiosk-employee-status-card" class="hidden mt-4 p-4 rounded-xl bg-slate-950/80 border border-slate-800">
                   <div class="flex items-center gap-3">
                     <img id="kiosk-emp-avatar" src="" alt="Avatar" class="w-12 h-12 rounded-xl object-cover border border-slate-700">
-                    <div>
-                      <h4 id="kiosk-emp-name" class="font-bold text-white text-base">Employee Name</h4>
-                      <p id="kiosk-emp-role" class="text-xs text-indigo-400 font-medium">Position</p>
-                      <p id="kiosk-emp-shift" class="text-[11px] text-slate-400">Shift</p>
+                    <div class="truncate">
+                      <h4 id="kiosk-emp-name" class="font-bold text-white text-sm sm:text-base truncate">Employee Name</h4>
+                      <p id="kiosk-emp-role" class="text-xs text-indigo-400 font-medium truncate">Position</p>
+                      <p id="kiosk-emp-shift" class="text-[11px] text-slate-400 truncate">Shift</p>
                     </div>
                   </div>
 
@@ -430,25 +440,25 @@
                     </div>
                     <div>
                       <span class="text-[10px] text-slate-500 block uppercase">Status</span>
-                      <span id="kiosk-today-status" class="px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-slate-800 text-slate-400">Ready</span>
+                      <span id="kiosk-today-status" class="px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-slate-800 text-slate-400 truncate block">Ready</span>
                     </div>
                   </div>
                 </div>
               </div>
 
               <!-- Main Clock-In / Clock-Out Buttons -->
-              <div id="kiosk-actions-group" class="grid grid-cols-2 gap-3 mt-6 opacity-50 pointer-events-none transition-opacity">
+              <div id="kiosk-actions-group" class="grid grid-cols-2 gap-3 mt-4 sm:mt-6 opacity-50 pointer-events-none transition-opacity">
                 <!-- Clock In -->
                 <button id="btn-clock-in"
-                        class="w-full py-4 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-bold text-sm shadow-lg shadow-emerald-600/20 transition transform active:scale-98 flex flex-col items-center justify-center gap-1">
-                  <i class="fa-solid fa-right-to-bracket text-xl"></i>
+                        class="w-full py-3.5 sm:py-4 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-bold text-xs sm:text-sm shadow-lg shadow-emerald-600/20 transition active:scale-95 flex flex-col items-center justify-center gap-1">
+                  <i class="fa-solid fa-right-to-bracket text-lg sm:text-xl"></i>
                   <span>CLOCK IN</span>
                 </button>
 
                 <!-- Clock Out -->
                 <button id="btn-clock-out"
-                        class="w-full py-4 rounded-xl bg-gradient-to-r from-rose-600 to-red-600 hover:from-rose-500 hover:to-red-500 text-white font-bold text-sm shadow-lg shadow-rose-600/20 transition transform active:scale-98 flex flex-col items-center justify-center gap-1">
-                  <i class="fa-solid fa-right-from-bracket text-xl"></i>
+                        class="w-full py-3.5 sm:py-4 rounded-xl bg-gradient-to-r from-rose-600 to-red-600 hover:from-rose-500 hover:to-red-500 text-white font-bold text-xs sm:text-sm shadow-lg shadow-rose-600/20 transition active:scale-95 flex flex-col items-center justify-center gap-1">
+                  <i class="fa-solid fa-right-from-bracket text-lg sm:text-xl"></i>
                   <span>CLOCK OUT</span>
                 </button>
               </div>
@@ -465,17 +475,17 @@
         <!-- Header -->
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
-            <h2 class="text-2xl font-bold tracking-tight text-white">Daily Attendance Master</h2>
-            <p class="text-sm text-slate-400 mt-1">Review clock-in logs, audit timestamps, and regularize records</p>
+            <h2 class="text-xl sm:text-2xl font-bold tracking-tight text-white">Daily Attendance Master</h2>
+            <p class="text-xs sm:text-sm text-slate-400 mt-1">Review clock-in logs, audit timestamps, and regularize records</p>
           </div>
           <div class="flex items-center gap-2">
             <button onclick="ReportsModule.exportToCSV()"
-                    class="px-3.5 py-2 text-xs font-semibold rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 transition flex items-center gap-2">
-              <i class="fa-solid fa-file-csv"></i> Export CSV
+                    class="flex-1 sm:flex-none justify-center px-3.5 py-2 text-xs font-semibold rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 transition flex items-center gap-2">
+              <i class="fa-solid fa-file-csv"></i> <span>Export CSV</span>
             </button>
             <button onclick="ReportsModule.exportToExcel()"
-                    class="px-3.5 py-2 text-xs font-semibold rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white shadow-lg shadow-emerald-600/20 transition flex items-center gap-2">
-              <i class="fa-solid fa-file-excel"></i> Export Excel
+                    class="flex-1 sm:flex-none justify-center px-3.5 py-2 text-xs font-semibold rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white shadow-lg shadow-emerald-600/20 transition flex items-center gap-2">
+              <i class="fa-solid fa-file-excel"></i> <span>Export Excel</span>
             </button>
           </div>
         </div>
@@ -512,10 +522,10 @@
           </div>
         </div>
 
-        <!-- Attendance Records Table -->
+        <!-- Attendance Records Table (Mobile Horizontally Scrollable) -->
         <div class="glass-panel rounded-2xl border border-slate-800 overflow-hidden shadow-xl">
           <div class="overflow-x-auto">
-            <table class="w-full text-left border-collapse">
+            <table class="w-full text-left border-collapse min-w-[640px]">
               <thead>
                 <tr class="bg-slate-950/80 border-b border-slate-800 text-[11px] font-bold uppercase tracking-wider text-slate-400">
                   <th class="py-3.5 px-4">Employee</th>
@@ -543,15 +553,21 @@
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
             <div class="flex items-center gap-3">
-              <h2 class="text-2xl font-bold tracking-tight text-white">Employee Directory</h2>
+              <h2 class="text-xl sm:text-2xl font-bold tracking-tight text-white">Employee Directory</h2>
               <span id="employee-total-count" class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">0 Employees</span>
             </div>
-            <p class="text-sm text-slate-400 mt-1">Manage personnel, roles, departments, shifts, and authentication PINs in Supabase</p>
+            <p class="text-xs sm:text-sm text-slate-400 mt-1">Manage personnel, roles, departments, shifts, and authentication PINs in Supabase</p>
           </div>
-          <button id="btn-add-employee"
-                  class="px-4 py-2.5 text-xs font-semibold rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white shadow-lg shadow-indigo-600/25 transition flex items-center gap-2 self-start sm:self-auto">
-            <i class="fa-solid fa-user-plus"></i> Add New Employee
-          </button>
+          <div class="flex items-center gap-2 self-stretch sm:self-auto">
+            <button id="btn-manage-departments"
+                    class="flex-1 sm:flex-none justify-center px-3.5 py-2.5 text-xs font-semibold rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition flex items-center gap-2 active:scale-95">
+              <i class="fa-solid fa-sitemap text-indigo-400"></i> Departments
+            </button>
+            <button id="btn-add-employee"
+                    class="flex-1 sm:flex-none justify-center px-4 py-2.5 text-xs font-semibold rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white shadow-lg shadow-indigo-600/25 transition flex items-center gap-2 active:scale-95">
+              <i class="fa-solid fa-user-plus"></i> Add Employee
+            </button>
+          </div>
         </div>
 
         <!-- Filter & Search Bar -->
@@ -593,18 +609,18 @@
         <!-- Header -->
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
-            <h2 class="text-2xl font-bold tracking-tight text-white">Leave Applications</h2>
-            <p class="text-sm text-slate-400 mt-1">Review leave requests, approve time off, and maintain workforce quotas</p>
+            <h2 class="text-xl sm:text-2xl font-bold tracking-tight text-white">Leave Applications</h2>
+            <p class="text-xs sm:text-sm text-slate-400 mt-1">Review leave requests, approve time off, and maintain workforce quotas</p>
           </div>
           <button id="btn-open-apply-leave"
-                  class="px-4 py-2.5 text-xs font-semibold rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white shadow-lg shadow-indigo-600/25 transition flex items-center gap-2 self-start sm:self-auto">
+                  class="px-4 py-2.5 text-xs font-semibold rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white shadow-lg shadow-indigo-600/25 transition flex items-center justify-center gap-2 self-stretch sm:self-auto active:scale-95">
             <i class="fa-solid fa-plus"></i> Apply For Leave
           </button>
         </div>
 
         <!-- Leave KPI Counters -->
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          <div class="glass-panel rounded-2xl p-5 border border-slate-800 flex items-center justify-between">
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
+          <div class="glass-panel rounded-2xl p-4 sm:p-5 border border-slate-800 flex items-center justify-between">
             <div>
               <p class="text-xs font-bold uppercase tracking-wider text-amber-400">Pending Review</p>
               <h3 id="kpi-leaves-pending" class="text-2xl font-extrabold text-white mt-1">0</h3>
@@ -614,7 +630,7 @@
             </div>
           </div>
 
-          <div class="glass-panel rounded-2xl p-5 border border-slate-800 flex items-center justify-between">
+          <div class="glass-panel rounded-2xl p-4 sm:p-5 border border-slate-800 flex items-center justify-between">
             <div>
               <p class="text-xs font-bold uppercase tracking-wider text-emerald-400">Approved Leaves</p>
               <h3 id="kpi-leaves-approved" class="text-2xl font-extrabold text-white mt-1">0</h3>
@@ -624,7 +640,7 @@
             </div>
           </div>
 
-          <div class="glass-panel rounded-2xl p-5 border border-slate-800 flex items-center justify-between">
+          <div class="glass-panel rounded-2xl p-4 sm:p-5 border border-slate-800 flex items-center justify-between">
             <div>
               <p class="text-xs font-bold uppercase tracking-wider text-rose-400">Rejected</p>
               <h3 id="kpi-leaves-rejected" class="text-2xl font-extrabold text-white mt-1">0</h3>
@@ -636,17 +652,17 @@
         </div>
 
         <!-- Filter Tabs -->
-        <div class="flex items-center gap-2 border-b border-slate-800 pb-3">
-          <button data-status="all" class="leave-tab-btn px-3.5 py-1.5 rounded-lg text-xs font-bold border transition text-indigo-400 border-indigo-500 bg-slate-800/80">All Requests</button>
-          <button data-status="pending" class="leave-tab-btn px-3.5 py-1.5 rounded-lg text-xs font-bold border transition text-slate-400 border-transparent hover:text-slate-200">Pending</button>
-          <button data-status="approved" class="leave-tab-btn px-3.5 py-1.5 rounded-lg text-xs font-bold border transition text-slate-400 border-transparent hover:text-slate-200">Approved</button>
-          <button data-status="rejected" class="leave-tab-btn px-3.5 py-1.5 rounded-lg text-xs font-bold border transition text-slate-400 border-transparent hover:text-slate-200">Rejected</button>
+        <div class="flex items-center gap-1.5 sm:gap-2 border-b border-slate-800 pb-3 overflow-x-auto">
+          <button data-status="all" class="leave-tab-btn px-3 py-1.5 rounded-lg text-xs font-bold border transition text-indigo-400 border-indigo-500 bg-slate-800/80 flex-shrink-0">All Requests</button>
+          <button data-status="pending" class="leave-tab-btn px-3 py-1.5 rounded-lg text-xs font-bold border transition text-slate-400 border-transparent hover:text-slate-200 flex-shrink-0">Pending</button>
+          <button data-status="approved" class="leave-tab-btn px-3 py-1.5 rounded-lg text-xs font-bold border transition text-slate-400 border-transparent hover:text-slate-200 flex-shrink-0">Approved</button>
+          <button data-status="rejected" class="leave-tab-btn px-3 py-1.5 rounded-lg text-xs font-bold border transition text-slate-400 border-transparent hover:text-slate-200 flex-shrink-0">Rejected</button>
         </div>
 
-        <!-- Leave Requests Table -->
+        <!-- Leave Requests Table (Mobile Horizontally Scrollable) -->
         <div class="glass-panel rounded-2xl border border-slate-800 overflow-hidden shadow-xl">
           <div class="overflow-x-auto">
-            <table class="w-full text-left border-collapse">
+            <table class="w-full text-left border-collapse min-w-[640px]">
               <thead>
                 <tr class="bg-slate-950/80 border-b border-slate-800 text-[11px] font-bold uppercase tracking-wider text-slate-400">
                   <th class="py-3.5 px-4">Employee</th>
@@ -673,27 +689,27 @@
         <!-- Header -->
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
-            <h2 class="text-2xl font-bold tracking-tight text-white">Monthly Timesheet Matrix</h2>
-            <p class="text-sm text-slate-400 mt-1">Calendar matrix view with aggregated hours and spreadsheet downloads</p>
+            <h2 class="text-xl sm:text-2xl font-bold tracking-tight text-white">Monthly Timesheet Matrix</h2>
+            <p class="text-xs sm:text-sm text-slate-400 mt-1">Calendar matrix view with aggregated hours and spreadsheet downloads</p>
           </div>
-          <div class="flex items-center gap-2" id="filter-controls">
+          <div class="flex items-center gap-2 flex-wrap" id="filter-controls">
             <button id="btn-print-timesheet"
                     class="px-3.5 py-2 text-xs font-semibold rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 transition flex items-center gap-2">
-              <i class="fa-solid fa-print"></i> Print
+              <i class="fa-solid fa-print"></i> <span>Print</span>
             </button>
             <button id="btn-export-csv"
                     class="px-3.5 py-2 text-xs font-semibold rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 transition flex items-center gap-2">
-              <i class="fa-solid fa-file-csv"></i> CSV
+              <i class="fa-solid fa-file-csv"></i> <span>CSV</span>
             </button>
             <button id="btn-export-xlsx"
                     class="px-3.5 py-2 text-xs font-semibold rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white shadow-lg shadow-emerald-600/20 transition flex items-center gap-2">
-              <i class="fa-solid fa-file-excel"></i> Excel (.xlsx)
+              <i class="fa-solid fa-file-excel"></i> <span>Excel (.xlsx)</span>
             </button>
           </div>
         </div>
 
         <!-- Month & Year Selector -->
-        <div class="glass-panel rounded-2xl p-4 border border-slate-800 flex flex-wrap items-center gap-4">
+        <div class="glass-panel rounded-2xl p-4 border border-slate-800 flex flex-wrap items-center gap-3 sm:gap-4">
           <div class="flex items-center gap-2">
             <span class="text-xs font-bold uppercase text-slate-400">Month:</span>
             <select id="report-month-select" class="bg-slate-950 border border-slate-800 rounded-xl px-3 py-1.5 text-xs text-white focus:border-indigo-500 focus:outline-none"></select>
@@ -704,19 +720,19 @@
           </div>
 
           <!-- Color Legend -->
-          <div class="ml-auto flex items-center gap-3 text-[11px] text-slate-400">
-            <span class="flex items-center gap-1"><span class="w-3 h-3 rounded bg-emerald-500/20 text-emerald-400 text-center font-bold text-[9px] inline-block leading-3">P</span> Present</span>
-            <span class="flex items-center gap-1"><span class="w-3 h-3 rounded bg-amber-500/20 text-amber-400 text-center font-bold text-[9px] inline-block leading-3">L</span> Late</span>
-            <span class="flex items-center gap-1"><span class="w-3 h-3 rounded bg-rose-500/20 text-rose-400 text-center font-bold text-[9px] inline-block leading-3">A</span> Absent</span>
-            <span class="flex items-center gap-1"><span class="w-3 h-3 rounded bg-purple-500/20 text-purple-400 text-center font-bold text-[9px] inline-block leading-3">LV</span> Leave</span>
-            <span class="flex items-center gap-1"><span class="w-3 h-3 rounded bg-slate-800 text-slate-500 text-center font-bold text-[9px] inline-block leading-3">W</span> Weekend</span>
+          <div class="w-full sm:w-auto sm:ml-auto flex items-center gap-2.5 sm:gap-3 text-[11px] text-slate-400 overflow-x-auto pt-2 sm:pt-0">
+            <span class="flex items-center gap-1 flex-shrink-0"><span class="w-3 h-3 rounded bg-emerald-500/20 text-emerald-400 text-center font-bold text-[9px] inline-block leading-3">P</span> Present</span>
+            <span class="flex items-center gap-1 flex-shrink-0"><span class="w-3 h-3 rounded bg-amber-500/20 text-amber-400 text-center font-bold text-[9px] inline-block leading-3">L</span> Late</span>
+            <span class="flex items-center gap-1 flex-shrink-0"><span class="w-3 h-3 rounded bg-rose-500/20 text-rose-400 text-center font-bold text-[9px] inline-block leading-3">A</span> Absent</span>
+            <span class="flex items-center gap-1 flex-shrink-0"><span class="w-3 h-3 rounded bg-purple-500/20 text-purple-400 text-center font-bold text-[9px] inline-block leading-3">LV</span> Leave</span>
+            <span class="flex items-center gap-1 flex-shrink-0"><span class="w-3 h-3 rounded bg-slate-800 text-slate-500 text-center font-bold text-[9px] inline-block leading-3">W</span> Weekend</span>
           </div>
         </div>
 
         <!-- Timesheet Matrix Table -->
         <div class="glass-panel rounded-2xl border border-slate-800 overflow-hidden shadow-xl">
           <div class="overflow-x-auto max-h-[600px]">
-            <table class="w-full text-left border-collapse">
+            <table class="w-full text-left border-collapse min-w-[700px]">
               <thead id="matrix-timesheet-head">
                 <!-- Dynamically generated days -->
               </thead>
@@ -729,26 +745,26 @@
       </section>
 
       <!-- ==========================================================================
-           VIEW 7: DATABASE & SYSTEM SETTINGS
+           VIEW 7: DATABASE & SYSTEM SETTINGS + SQL SCHEMA DISPLAY
            ========================================================================== -->
       <section id="view-settings" class="view-section hidden space-y-6">
         <div>
-          <h2 class="text-2xl font-bold tracking-tight text-white">Database Configuration & Settings</h2>
-          <p class="text-sm text-slate-400 mt-1">Connect your Supabase project to retrieve existing workforce data or initialize a new database</p>
+          <h2 class="text-xl sm:text-2xl font-bold tracking-tight text-white">Database Configuration & Schema</h2>
+          <p class="text-xs sm:text-sm text-slate-400 mt-1">Connect your Supabase project credentials and copy the SQL schema for your database</p>
         </div>
 
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
           <!-- Left 2 Cols: Supabase Cloud DB Connection -->
           <div class="lg:col-span-2 space-y-6">
-            <div class="glass-panel rounded-2xl p-6 border border-slate-800 space-y-4">
+            <div class="glass-panel rounded-2xl p-5 sm:p-6 border border-slate-800 space-y-4">
               <div class="flex items-center justify-between pb-3 border-b border-slate-800">
                 <div class="flex items-center gap-3">
-                  <div class="w-10 h-10 rounded-xl bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 flex items-center justify-center text-lg">
+                  <div class="w-10 h-10 rounded-xl bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 flex items-center justify-center text-lg flex-shrink-0">
                     <i class="fa-solid fa-bolt"></i>
                   </div>
                   <div>
-                    <h3 class="font-bold text-base text-white">Supabase Cloud Database Credentials</h3>
+                    <h3 class="font-bold text-sm sm:text-base text-white">Supabase Cloud Database Credentials</h3>
                     <p class="text-xs text-slate-400">Found in your Supabase Dashboard -> Project Settings -> API</p>
                   </div>
                 </div>
@@ -757,96 +773,231 @@
               <div class="space-y-4">
                 <div>
                   <label class="block text-xs font-bold uppercase text-slate-400 mb-1">Supabase Project URL *</label>
-                  <input type="text" id="settings-supabase-url" placeholder="https://yourprojectid.supabase.co" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-white font-mono focus:border-indigo-500 focus:outline-none">
+                  <input type="text" id="settings-supabase-url" placeholder="https://yourprojectid.supabase.co" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-xs sm:text-sm text-white font-mono focus:border-indigo-500 focus:outline-none">
                 </div>
 
                 <div>
                   <label class="block text-xs font-bold uppercase text-slate-400 mb-1">Supabase Anon Public API Key *</label>
-                  <input type="password" id="settings-supabase-key" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..." class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-white font-mono focus:border-indigo-500 focus:outline-none">
+                  <input type="password" id="settings-supabase-key" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..." class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-xs sm:text-sm text-white font-mono focus:border-indigo-500 focus:outline-none">
                 </div>
               </div>
 
               <!-- Action Buttons -->
-              <div class="flex flex-wrap items-center gap-3 pt-3">
+              <div class="flex flex-wrap items-center gap-2.5 sm:gap-3 pt-2">
                 <button id="btn-test-supabase"
-                        class="px-4 py-2.5 text-xs font-semibold rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition flex items-center gap-2">
+                        class="px-4 py-2.5 text-xs font-semibold rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition flex items-center gap-2 active:scale-95">
                   <i class="fa-solid fa-plug"></i> Test Connection
                 </button>
                 <button id="btn-save-db-settings"
-                        class="px-5 py-2.5 text-xs font-semibold rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white shadow-lg shadow-indigo-600/25 transition flex items-center gap-2">
+                        class="px-5 py-2.5 text-xs font-semibold rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white shadow-lg shadow-indigo-600/25 transition flex items-center gap-2 active:scale-95">
                   <i class="fa-solid fa-floppy-disk"></i> Save & Connect Database
                 </button>
-                <button id="btn-bootstrap-db"
-                        class="px-4 py-2.5 text-xs font-semibold rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white shadow-lg shadow-emerald-600/20 transition flex items-center gap-2"
-                        title="Creates standard default departments and shifts in a newly created database">
-                  <i class="fa-solid fa-wand-magic-sparkles"></i> Initialize Default Departments & Shifts
-                </button>
                 <button id="btn-disconnect-db"
-                        class="px-4 py-2.5 text-xs font-semibold rounded-xl bg-slate-800 hover:bg-rose-500/10 hover:text-rose-400 text-slate-400 border border-slate-700 hover:border-rose-500/30 transition flex items-center gap-2 ml-auto">
+                        class="px-4 py-2.5 text-xs font-semibold rounded-xl bg-slate-800 hover:bg-rose-500/10 hover:text-rose-400 text-slate-400 border border-slate-700 hover:border-rose-500/30 transition flex items-center gap-2 sm:ml-auto active:scale-95">
                   <i class="fa-solid fa-link-slash"></i> Disconnect
                 </button>
               </div>
             </div>
 
             <!-- Organization Rules Settings -->
-            <div class="glass-panel rounded-2xl p-6 border border-slate-800 space-y-4">
-              <h3 class="font-bold text-base text-white flex items-center gap-2">
+            <div class="glass-panel rounded-2xl p-5 sm:p-6 border border-slate-800 space-y-4">
+              <h3 class="font-bold text-sm sm:text-base text-white flex items-center gap-2">
                 <i class="fa-solid fa-building text-indigo-400"></i> Organization Attendance Rules
               </h3>
               <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label class="block text-xs font-bold uppercase text-slate-400 mb-1">Company / Organization Name</label>
-                  <input type="text" id="settings-company-name" value="Apex Enterprise" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-white focus:border-indigo-500 focus:outline-none">
+                  <input type="text" id="settings-company-name" value="My Organization" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs sm:text-sm text-white focus:border-indigo-500 focus:outline-none">
                 </div>
                 <div>
                   <label class="block text-xs font-bold uppercase text-slate-400 mb-1">Late Grace Period (Minutes)</label>
-                  <input type="number" id="settings-grace-period" value="15" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-white focus:border-indigo-500 focus:outline-none">
+                  <input type="number" id="settings-grace-period" value="15" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs sm:text-sm text-white focus:border-indigo-500 focus:outline-none">
                 </div>
                 <div>
                   <label class="block text-xs font-bold uppercase text-slate-400 mb-1">Standard Work Start Time</label>
-                  <input type="time" id="settings-work-start" value="09:00" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-white focus:border-indigo-500 focus:outline-none">
+                  <input type="time" id="settings-work-start" value="09:00" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs sm:text-sm text-white focus:border-indigo-500 focus:outline-none">
                 </div>
                 <div>
                   <label class="block text-xs font-bold uppercase text-slate-400 mb-1">Standard Work End Time</label>
-                  <input type="time" id="settings-work-end" value="18:00" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-white focus:border-indigo-500 focus:outline-none">
+                  <input type="time" id="settings-work-end" value="18:00" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs sm:text-sm text-white focus:border-indigo-500 focus:outline-none">
                 </div>
               </div>
               <button id="btn-save-company-settings"
-                      class="px-4 py-2 text-xs font-semibold rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white transition flex items-center gap-2">
+                      class="px-4 py-2 text-xs font-semibold rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white transition flex items-center gap-2 active:scale-95">
                 <i class="fa-solid fa-check"></i> Save Organization Rules
               </button>
+            </div>
+
+            <!-- SQL Schema Display Card (Copy & Paste for SQL Editor) -->
+            <div class="glass-panel rounded-2xl p-5 sm:p-6 border border-slate-800 space-y-3">
+              <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-2 border-b border-slate-800">
+                <div>
+                  <h3 class="font-bold text-sm sm:text-base text-white flex items-center gap-2">
+                    <i class="fa-solid fa-code text-indigo-400"></i> Supabase SQL Schema Script
+                  </h3>
+                  <p class="text-xs text-slate-400 mt-0.5">Copy and run this in your Supabase SQL Editor to create tables (no default departments)</p>
+                </div>
+                <button id="btn-copy-schema"
+                        class="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs rounded-xl shadow-lg shadow-indigo-600/25 transition flex items-center justify-center gap-2 active:scale-95 flex-shrink-0">
+                  <i class="fa-regular fa-copy"></i> Copy SQL Schema
+                </button>
+              </div>
+
+              <div class="relative">
+                <pre class="bg-slate-950 p-4 rounded-xl border border-slate-800 text-[11px] font-mono text-indigo-200 overflow-x-auto max-h-72 select-all leading-relaxed"><code id="schema-code-display">-- Enable UUID extension
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+
+-- 1. DEPARTMENTS TABLE
+CREATE TABLE IF NOT EXISTS departments (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    name VARCHAR(100) NOT NULL UNIQUE,
+    code VARCHAR(20) NOT NULL UNIQUE,
+    description TEXT,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
+);
+
+-- 2. SHIFTS TABLE
+CREATE TABLE IF NOT EXISTS shifts (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    name VARCHAR(100) NOT NULL,
+    start_time TIME NOT NULL,
+    end_time TIME NOT NULL,
+    grace_period_minutes INTEGER DEFAULT 15,
+    half_day_hours NUMERIC(4,2) DEFAULT 4.00,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
+);
+
+-- 3. EMPLOYEES TABLE
+CREATE TABLE IF NOT EXISTS employees (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    employee_code VARCHAR(50) NOT NULL UNIQUE,
+    first_name VARCHAR(100) NOT NULL,
+    last_name VARCHAR(100) NOT NULL,
+    email VARCHAR(150) NOT NULL UNIQUE,
+    phone VARCHAR(30),
+    department_id UUID REFERENCES departments(id) ON DELETE SET NULL,
+    position VARCHAR(100) NOT NULL,
+    shift_id UUID REFERENCES shifts(id) ON DELETE SET NULL,
+    avatar_url TEXT,
+    status VARCHAR(20) DEFAULT 'active' CHECK (status IN ('active', 'inactive', 'on_leave')),
+    pin_code VARCHAR(10) DEFAULT '1234',
+    hire_date DATE DEFAULT CURRENT_DATE,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
+);
+
+-- 4. ATTENDANCE TABLE (No location tracking)
+CREATE TABLE IF NOT EXISTS attendance (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    employee_id UUID NOT NULL REFERENCES employees(id) ON DELETE CASCADE,
+    date DATE NOT NULL,
+    clock_in TIMESTAMP WITH TIME ZONE,
+    clock_out TIMESTAMP WITH TIME ZONE,
+    break_minutes INTEGER DEFAULT 0,
+    total_hours NUMERIC(5, 2) DEFAULT 0.00,
+    status VARCHAR(20) NOT NULL CHECK (status IN ('present', 'late', 'half_day', 'absent', 'on_leave')),
+    verification_photo TEXT,
+    notes TEXT,
+    is_regularized BOOLEAN DEFAULT FALSE,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL,
+    CONSTRAINT unique_employee_date UNIQUE (employee_id, date)
+);
+
+-- 5. LEAVE REQUESTS TABLE
+CREATE TABLE IF NOT EXISTS leave_requests (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    employee_id UUID NOT NULL REFERENCES employees(id) ON DELETE CASCADE,
+    leave_type VARCHAR(50) NOT NULL CHECK (leave_type IN ('casual', 'sick', 'annual', 'unpaid', 'maternity', 'paternity')),
+    start_date DATE NOT NULL,
+    end_date DATE NOT NULL,
+    total_days NUMERIC(4, 1) NOT NULL,
+    reason TEXT NOT NULL,
+    status VARCHAR(20) DEFAULT 'pending' CHECK (status IN ('pending', 'approved', 'rejected')),
+    admin_comment TEXT,
+    reviewed_at TIMESTAMP WITH TIME ZONE,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
+);
+
+-- 6. COMPANY SETTINGS TABLE
+CREATE TABLE IF NOT EXISTS organization_settings (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    company_name VARCHAR(150) DEFAULT 'My Organization',
+    office_start_time TIME DEFAULT '09:00:00',
+    office_end_time TIME DEFAULT '18:00:00',
+    grace_period_minutes INTEGER DEFAULT 15,
+    allow_camera_snapshot BOOLEAN DEFAULT TRUE,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
+);
+
+-- INDEXES FOR PERFORMANCE
+CREATE INDEX IF NOT EXISTS idx_attendance_date ON attendance(date);
+CREATE INDEX IF NOT EXISTS idx_attendance_emp_date ON attendance(employee_id, date);
+CREATE INDEX IF NOT EXISTS idx_employees_status ON employees(status);
+CREATE INDEX IF NOT EXISTS idx_employees_dept ON employees(department_id);
+CREATE INDEX IF NOT EXISTS idx_leave_requests_emp ON leave_requests(employee_id);
+CREATE INDEX IF NOT EXISTS idx_leave_requests_status ON leave_requests(status);
+
+-- ROW LEVEL SECURITY (RLS) POLICIES
+ALTER TABLE departments ENABLE ROW LEVEL SECURITY;
+ALTER TABLE shifts ENABLE ROW LEVEL SECURITY;
+ALTER TABLE employees ENABLE ROW LEVEL SECURITY;
+ALTER TABLE attendance ENABLE ROW LEVEL SECURITY;
+ALTER TABLE leave_requests ENABLE ROW LEVEL SECURITY;
+ALTER TABLE organization_settings ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Allow anon read departments" ON departments FOR SELECT USING (true);
+CREATE POLICY "Allow anon write departments" ON departments FOR ALL USING (true);
+
+CREATE POLICY "Allow anon read shifts" ON shifts FOR SELECT USING (true);
+CREATE POLICY "Allow anon write shifts" ON shifts FOR ALL USING (true);
+
+CREATE POLICY "Allow anon read employees" ON employees FOR SELECT USING (true);
+CREATE POLICY "Allow anon write employees" ON employees FOR ALL USING (true);
+
+CREATE POLICY "Allow anon read attendance" ON attendance FOR SELECT USING (true);
+CREATE POLICY "Allow anon write attendance" ON attendance FOR ALL USING (true);
+
+CREATE POLICY "Allow anon read leave_requests" ON leave_requests FOR SELECT USING (true);
+CREATE POLICY "Allow anon write leave_requests" ON leave_requests FOR ALL USING (true);
+
+CREATE POLICY "Allow anon read settings" ON organization_settings FOR SELECT USING (true);
+CREATE POLICY "Allow anon write settings" ON organization_settings FOR ALL USING (true);
+
+-- Enable Realtime
+ALTER PUBLICATION supabase_realtime ADD TABLE attendance;
+ALTER PUBLICATION supabase_realtime ADD TABLE leave_requests;
+ALTER PUBLICATION supabase_realtime ADD TABLE employees;</code></pre>
+              </div>
             </div>
           </div>
 
           <!-- Right 1 Col: Quick Supabase Guide -->
           <div class="space-y-6">
-            <div class="glass-panel rounded-2xl p-6 border border-slate-800 space-y-4">
+            <div class="glass-panel rounded-2xl p-5 sm:p-6 border border-slate-800 space-y-4">
               <h3 class="font-bold text-sm text-white flex items-center gap-2">
                 <i class="fa-solid fa-circle-info text-emerald-400"></i> Setup Instructions
               </h3>
-              <ol class="text-xs text-slate-400 space-y-2 list-decimal list-inside">
+              <ol class="text-xs text-slate-400 space-y-2 list-decimal list-inside leading-relaxed">
                 <li>Create a project at <b class="text-slate-300">supabase.com</b></li>
                 <li>Go to <b class="text-slate-300">SQL Editor</b> in your Supabase dashboard</li>
-                <li>Run the included <b class="text-indigo-400 font-mono">schema.sql</b> to create tables</li>
+                <li>Click <b class="text-indigo-400">Copy SQL Schema</b> on the left and run it</li>
                 <li>Copy your <b class="text-slate-300">Project URL</b> and <b class="text-slate-300">Anon Key</b> from Project Settings -> API</li>
-                <li>Paste them on the left and click <b class="text-indigo-400">Save & Connect</b></li>
+                <li>Paste them on the left and click <b class="text-indigo-400">Save & Connect Database</b></li>
               </ol>
 
               <div class="pt-2 border-t border-slate-800 text-xs text-slate-400 space-y-1">
-                <p class="text-[11px] text-slate-500">Schema file: <code class="text-indigo-300 font-mono">supabase/schema.sql</code></p>
-                <p class="text-[11px] text-slate-500">All data is retrieved live and stored directly in your Supabase database.</p>
+                <p class="text-[11px] text-slate-500">Zero demo data. Add your own departments, shifts, and employees anytime.</p>
               </div>
             </div>
 
             <!-- Features Summary Card -->
-            <div class="glass-panel rounded-2xl p-6 border border-slate-800 space-y-3">
-              <h4 class="font-bold text-xs uppercase tracking-wider text-slate-400">Features Active</h4>
+            <div class="glass-panel rounded-2xl p-5 sm:p-6 border border-slate-800 space-y-3">
+              <h4 class="font-bold text-xs uppercase tracking-wider text-slate-400">Active Architecture</h4>
               <div class="space-y-2 text-xs text-slate-300">
                 <div class="flex items-center gap-2"><i class="fa-solid fa-check text-emerald-400"></i> Direct Supabase REST & Realtime API</div>
-                <div class="flex items-center gap-2"><i class="fa-solid fa-check text-emerald-400"></i> Web Biometric Camera Snapshot</div>
-                <div class="flex items-center gap-2"><i class="fa-solid fa-check text-emerald-400"></i> Geolocation Geofencing Check</div>
+                <div class="flex items-center gap-2"><i class="fa-solid fa-check text-emerald-400"></i> Facial Snapshot Verification (No Location)</div>
+                <div class="flex items-center gap-2"><i class="fa-solid fa-check text-emerald-400"></i> Inline Department & Shift Creation</div>
                 <div class="flex items-center gap-2"><i class="fa-solid fa-check text-emerald-400"></i> SheetJS Excel (.xlsx) Export</div>
-                <div class="flex items-center gap-2"><i class="fa-solid fa-check text-emerald-400"></i> Web Audio Feedback Synthesizer</div>
+                <div class="flex items-center gap-2"><i class="fa-solid fa-check text-emerald-400"></i> Mobile Responsive Drawer & Touch Layout</div>
               </div>
             </div>
           </div>
@@ -858,87 +1009,98 @@
   </div>
 
   <!-- ==============================================================================
-       MODAL 1: ADD / EDIT EMPLOYEE
+       MODAL 1: ADD / EDIT EMPLOYEE (WITH INLINE DEPARTMENT & SHIFT CREATION)
        ============================================================================== -->
-  <div id="employee-modal" class="hidden fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
-    <div class="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-lg overflow-hidden shadow-2xl animate-in fade-in duration-200">
-      <div class="flex items-center justify-between p-5 border-b border-slate-800">
-        <h3 id="employee-modal-title" class="font-bold text-base text-white">Register New Employee</h3>
-        <button id="btn-close-emp-modal" class="text-slate-400 hover:text-white p-1 rounded-lg">
+  <div id="employee-modal" class="hidden fixed inset-0 z-50 bg-black/75 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
+    <div class="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-lg my-auto overflow-hidden shadow-2xl animate-in fade-in duration-200">
+      <div class="flex items-center justify-between p-4 sm:p-5 border-b border-slate-800">
+        <h3 id="employee-modal-title" class="font-bold text-sm sm:text-base text-white">Register New Employee</h3>
+        <button id="btn-close-emp-modal" class="text-slate-400 hover:text-white p-2 rounded-lg" aria-label="Close modal">
           <i class="fa-solid fa-xmark text-lg"></i>
         </button>
       </div>
 
-      <form id="employee-form" class="p-6 space-y-4 max-h-[80vh] overflow-y-auto">
+      <form id="employee-form" class="p-4 sm:p-6 space-y-4 max-h-[82vh] overflow-y-auto">
         <input type="hidden" id="emp-form-id">
 
-        <div class="grid grid-cols-2 gap-3">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div>
             <label class="block text-xs font-bold uppercase text-slate-400 mb-1">First Name *</label>
-            <input type="text" id="emp-form-firstname" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-white focus:border-indigo-500 focus:outline-none">
+            <input type="text" id="emp-form-firstname" required placeholder="John" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-sm text-white focus:border-indigo-500 focus:outline-none">
           </div>
           <div>
             <label class="block text-xs font-bold uppercase text-slate-400 mb-1">Last Name *</label>
-            <input type="text" id="emp-form-lastname" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-white focus:border-indigo-500 focus:outline-none">
+            <input type="text" id="emp-form-lastname" required placeholder="Doe" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-sm text-white focus:border-indigo-500 focus:outline-none">
           </div>
         </div>
 
-        <div class="grid grid-cols-2 gap-3">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div>
             <label class="block text-xs font-bold uppercase text-slate-400 mb-1">Employee Code *</label>
-            <input type="text" id="emp-form-code" required placeholder="EMP-1001" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-white font-mono focus:border-indigo-500 focus:outline-none">
+            <input type="text" id="emp-form-code" required placeholder="EMP-1001" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-sm text-white font-mono focus:border-indigo-500 focus:outline-none">
           </div>
           <div>
             <label class="block text-xs font-bold uppercase text-slate-400 mb-1">Kiosk Security PIN *</label>
-            <input type="text" id="emp-form-pin" value="1234" required maxlength="6" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-white font-mono focus:border-indigo-500 focus:outline-none">
+            <input type="text" id="emp-form-pin" value="1234" required maxlength="6" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-sm text-white font-mono focus:border-indigo-500 focus:outline-none">
           </div>
         </div>
 
-        <div class="grid grid-cols-2 gap-3">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div>
             <label class="block text-xs font-bold uppercase text-slate-400 mb-1">Email *</label>
-            <input type="email" id="emp-form-email" required placeholder="name@company.com" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-white focus:border-indigo-500 focus:outline-none">
+            <input type="email" id="emp-form-email" required placeholder="name@company.com" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-sm text-white focus:border-indigo-500 focus:outline-none">
           </div>
           <div>
             <label class="block text-xs font-bold uppercase text-slate-400 mb-1">Phone Number</label>
-            <input type="text" id="emp-form-phone" placeholder="+1 (555) 000-0000" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-white focus:border-indigo-500 focus:outline-none">
+            <input type="text" id="emp-form-phone" placeholder="+1 (555) 000-0000" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-sm text-white focus:border-indigo-500 focus:outline-none">
           </div>
         </div>
 
-        <div class="grid grid-cols-2 gap-3">
+        <!-- Department & Shift with Inline Quick "+ New" Creation Buttons -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div>
-            <label class="block text-xs font-bold uppercase text-slate-400 mb-1">Department</label>
-            <select id="emp-form-dept" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-white focus:border-indigo-500 focus:outline-none"></select>
+            <div class="flex items-center justify-between mb-1">
+              <label class="block text-xs font-bold uppercase text-slate-400">Department</label>
+              <button type="button" id="btn-quick-add-dept" class="text-xs text-indigo-400 hover:text-indigo-300 font-semibold flex items-center gap-1 transition active:scale-95" title="Add a new department directly">
+                <i class="fa-solid fa-plus text-[10px]"></i> Add Dept
+              </button>
+            </div>
+            <select id="emp-form-dept" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-sm text-white focus:border-indigo-500 focus:outline-none"></select>
           </div>
           <div>
-            <label class="block text-xs font-bold uppercase text-slate-400 mb-1">Shift</label>
-            <select id="emp-form-shift" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-white focus:border-indigo-500 focus:outline-none"></select>
+            <div class="flex items-center justify-between mb-1">
+              <label class="block text-xs font-bold uppercase text-slate-400">Shift</label>
+              <button type="button" id="btn-quick-add-shift" class="text-xs text-indigo-400 hover:text-indigo-300 font-semibold flex items-center gap-1 transition active:scale-95" title="Add a new shift directly">
+                <i class="fa-solid fa-plus text-[10px]"></i> Add Shift
+              </button>
+            </div>
+            <select id="emp-form-shift" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-sm text-white focus:border-indigo-500 focus:outline-none"></select>
           </div>
         </div>
 
         <div>
           <label class="block text-xs font-bold uppercase text-slate-400 mb-1">Job Title / Designation *</label>
-          <input type="text" id="emp-form-position" required placeholder="e.g. Lead Software Engineer" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-white focus:border-indigo-500 focus:outline-none">
+          <input type="text" id="emp-form-position" required placeholder="e.g. Lead Software Engineer" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-sm text-white focus:border-indigo-500 focus:outline-none">
         </div>
 
-        <div class="grid grid-cols-2 gap-3">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div>
             <label class="block text-xs font-bold uppercase text-slate-400 mb-1">Status</label>
-            <select id="emp-form-status" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-white focus:border-indigo-500 focus:outline-none">
+            <select id="emp-form-status" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-sm text-white focus:border-indigo-500 focus:outline-none">
               <option value="active">Active</option>
               <option value="on_leave">On Leave</option>
               <option value="inactive">Inactive</option>
             </select>
           </div>
           <div>
-            <label class="block text-xs font-bold uppercase text-slate-400 mb-1">Avatar Image URL</label>
-            <input type="url" id="emp-form-avatar" placeholder="https://..." class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-white focus:border-indigo-500 focus:outline-none">
+            <label class="block text-xs font-bold uppercase text-slate-400 mb-1">Avatar Image URL (Optional)</label>
+            <input type="url" id="emp-form-avatar" placeholder="https://..." class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-sm text-white focus:border-indigo-500 focus:outline-none">
           </div>
         </div>
 
         <div class="flex items-center justify-end gap-3 pt-4 border-t border-slate-800">
-          <button type="button" onclick="EmployeeModule.closeEmployeeModal()" class="px-4 py-2 rounded-xl text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-300 transition">Cancel</button>
-          <button type="submit" class="px-5 py-2 rounded-xl text-xs font-semibold bg-indigo-600 hover:bg-indigo-500 text-white shadow-lg shadow-indigo-600/25 transition">Save Employee</button>
+          <button type="button" onclick="EmployeeModule.closeEmployeeModal()" class="px-4 py-2.5 rounded-xl text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-300 transition active:scale-95">Cancel</button>
+          <button type="submit" class="px-5 py-2.5 rounded-xl text-xs font-semibold bg-indigo-600 hover:bg-indigo-500 text-white shadow-lg shadow-indigo-600/25 transition active:scale-95">Save Employee</button>
         </div>
       </form>
     </div>
@@ -947,24 +1109,24 @@
   <!-- ==============================================================================
        MODAL 2: APPLY FOR LEAVE
        ============================================================================== -->
-  <div id="apply-leave-modal" class="hidden fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
-    <div class="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-md overflow-hidden shadow-2xl">
-      <div class="flex items-center justify-between p-5 border-b border-slate-800">
-        <h3 class="font-bold text-base text-white">Submit Leave Request</h3>
-        <button id="btn-close-leave-modal" class="text-slate-400 hover:text-white p-1 rounded-lg">
+  <div id="apply-leave-modal" class="hidden fixed inset-0 z-50 bg-black/75 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
+    <div class="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-md my-auto overflow-hidden shadow-2xl">
+      <div class="flex items-center justify-between p-4 sm:p-5 border-b border-slate-800">
+        <h3 class="font-bold text-sm sm:text-base text-white">Submit Leave Request</h3>
+        <button id="btn-close-leave-modal" class="text-slate-400 hover:text-white p-2 rounded-lg" aria-label="Close modal">
           <i class="fa-solid fa-xmark text-lg"></i>
         </button>
       </div>
 
-      <form id="apply-leave-form" class="p-6 space-y-4">
+      <form id="apply-leave-form" class="p-4 sm:p-6 space-y-4">
         <div>
           <label class="block text-xs font-bold uppercase text-slate-400 mb-1">Select Employee *</label>
-          <select id="leave-form-employee" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-white focus:border-indigo-500 focus:outline-none"></select>
+          <select id="leave-form-employee" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-sm text-white focus:border-indigo-500 focus:outline-none"></select>
         </div>
 
         <div>
           <label class="block text-xs font-bold uppercase text-slate-400 mb-1">Leave Category *</label>
-          <select id="leave-form-type" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-white focus:border-indigo-500 focus:outline-none">
+          <select id="leave-form-type" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-sm text-white focus:border-indigo-500 focus:outline-none">
             <option value="annual">Annual Vacation Leave</option>
             <option value="casual">Casual / Personal Leave</option>
             <option value="sick">Sick / Medical Leave</option>
@@ -972,30 +1134,30 @@
           </select>
         </div>
 
-        <div class="grid grid-cols-2 gap-3">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div>
             <label class="block text-xs font-bold uppercase text-slate-400 mb-1">Start Date *</label>
-            <input type="date" id="leave-form-start" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:border-indigo-500 focus:outline-none">
+            <input type="date" id="leave-form-start" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-xs sm:text-sm text-white focus:border-indigo-500 focus:outline-none">
           </div>
           <div>
             <label class="block text-xs font-bold uppercase text-slate-400 mb-1">End Date *</label>
-            <input type="date" id="leave-form-end" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:border-indigo-500 focus:outline-none">
+            <input type="date" id="leave-form-end" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-xs sm:text-sm text-white focus:border-indigo-500 focus:outline-none">
           </div>
         </div>
 
         <div>
           <label class="block text-xs font-bold uppercase text-slate-400 mb-1">Total Days</label>
-          <input type="number" id="leave-form-days" min="0.5" step="0.5" value="1" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-white focus:border-indigo-500 focus:outline-none">
+          <input type="number" id="leave-form-days" min="0.5" step="0.5" value="1" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-sm text-white focus:border-indigo-500 focus:outline-none">
         </div>
 
         <div>
           <label class="block text-xs font-bold uppercase text-slate-400 mb-1">Reason / Description *</label>
-          <textarea id="leave-form-reason" required rows="3" placeholder="Provide details regarding the reason for time off..." class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-white focus:border-indigo-500 focus:outline-none"></textarea>
+          <textarea id="leave-form-reason" required rows="3" placeholder="Provide details regarding the reason for time off..." class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-sm text-white focus:border-indigo-500 focus:outline-none"></textarea>
         </div>
 
         <div class="flex items-center justify-end gap-3 pt-4 border-t border-slate-800">
-          <button type="button" onclick="LeaveModule.closeApplyLeaveModal()" class="px-4 py-2 rounded-xl text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-300 transition">Cancel</button>
-          <button type="submit" class="px-5 py-2 rounded-xl text-xs font-semibold bg-indigo-600 hover:bg-indigo-500 text-white shadow-lg shadow-indigo-600/25 transition">Submit Application</button>
+          <button type="button" onclick="LeaveModule.closeApplyLeaveModal()" class="px-4 py-2.5 rounded-xl text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-300 transition active:scale-95">Cancel</button>
+          <button type="submit" class="px-5 py-2.5 rounded-xl text-xs font-semibold bg-indigo-600 hover:bg-indigo-500 text-white shadow-lg shadow-indigo-600/25 transition active:scale-95">Submit Application</button>
         </div>
       </form>
     </div>

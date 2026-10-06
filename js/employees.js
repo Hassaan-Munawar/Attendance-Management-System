@@ -30,14 +30,218 @@ const EmployeeModule = {
     }
 
     if (modalDeptSelect) {
-      modalDeptSelect.innerHTML = depts.map(d => `<option value="${d.id}">${d.name}</option>`).join("");
+      if (depts.length === 0) {
+        modalDeptSelect.innerHTML = `<option value="">No departments created (+ Click 'New')</option>`;
+      } else {
+        modalDeptSelect.innerHTML = `<option value="">-- Select Department --</option>` +
+          depts.map(d => `<option value="${d.id}">${d.name}</option>`).join("");
+      }
     }
 
     // Also populate shifts in modal
     const shifts = await DB.getShifts();
     const modalShiftSelect = document.getElementById("emp-form-shift");
     if (modalShiftSelect) {
-      modalShiftSelect.innerHTML = shifts.map(s => `<option value="${s.id}">${s.name} (${s.start_time.substring(0, 5)} - ${s.end_time.substring(0, 5)})</option>`).join("");
+      if (shifts.length === 0) {
+        modalShiftSelect.innerHTML = `<option value="">No shifts created (+ Click 'New')</option>`;
+      } else {
+        modalShiftSelect.innerHTML = `<option value="">-- Select Shift --</option>` +
+          shifts.map(s => `<option value="${s.id}">${s.name} (${s.start_time.substring(0, 5)} - ${s.end_time.substring(0, 5)})</option>`).join("");
+      }
+    }
+  },
+
+  async openQuickAddDepartmentModal() {
+    const { value: formValues } = await Swal.fire({
+      title: "Add New Department",
+      html: `
+        <div class="text-left text-sm space-y-3">
+          <div>
+            <label class="block text-xs font-bold uppercase text-slate-400 mb-1">Department Name *</label>
+            <input type="text" id="swal-dept-name" placeholder="e.g. Human Resources" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white text-sm focus:border-indigo-500 focus:outline-none">
+          </div>
+          <div>
+            <label class="block text-xs font-bold uppercase text-slate-400 mb-1">Department Code *</label>
+            <input type="text" id="swal-dept-code" placeholder="e.g. HR" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white text-sm font-mono uppercase focus:border-indigo-500 focus:outline-none">
+          </div>
+          <div>
+            <label class="block text-xs font-bold uppercase text-slate-400 mb-1">Description (Optional)</label>
+            <textarea id="swal-dept-desc" rows="2" placeholder="Brief function description..." class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white text-sm focus:border-indigo-500 focus:outline-none"></textarea>
+          </div>
+        </div>
+      `,
+      showCancelButton: true,
+      confirmButtonText: "Create Department",
+      confirmButtonColor: "#4f46e5",
+      preConfirm: () => {
+        const name = document.getElementById("swal-dept-name")?.value.trim();
+        const code = document.getElementById("swal-dept-code")?.value.trim().toUpperCase();
+        const description = document.getElementById("swal-dept-desc")?.value.trim() || "";
+        if (!name || !code) {
+          Swal.showValidationMessage("Please provide both Department Name and Code");
+          return false;
+        }
+        return { name, code, description };
+      }
+    });
+
+    if (!formValues) return;
+
+    try {
+      const newDept = await DB.addDepartment(formValues);
+      CONFIG.playSound("success");
+      await this.populateDepartmentFilters();
+      if (AttendanceModule && AttendanceModule.populateDepartmentFilter) {
+        await AttendanceModule.populateDepartmentFilter();
+      }
+      const modalDeptSelect = document.getElementById("emp-form-dept");
+      if (modalDeptSelect && newDept) {
+        modalDeptSelect.value = newDept.id;
+      }
+      Swal.fire({
+        icon: "success",
+        title: "Department Created!",
+        text: `${formValues.name} (${formValues.code}) added to Supabase.`,
+        timer: 1600,
+        showConfirmButton: false
+      });
+    } catch (err) {
+      CONFIG.playSound("error");
+      Swal.fire({ icon: "error", title: "Failed to Add Department", text: err.message });
+    }
+  },
+
+  async openQuickAddShiftModal() {
+    const { value: formValues } = await Swal.fire({
+      title: "Add New Working Shift",
+      html: `
+        <div class="text-left text-sm space-y-3">
+          <div>
+            <label class="block text-xs font-bold uppercase text-slate-400 mb-1">Shift Name *</label>
+            <input type="text" id="swal-shift-name" placeholder="e.g. Day Shift, Night Shift" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white text-sm focus:border-indigo-500 focus:outline-none">
+          </div>
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block text-xs font-bold uppercase text-slate-400 mb-1">Start Time *</label>
+              <input type="time" id="swal-shift-start" value="09:00" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white text-sm focus:border-indigo-500 focus:outline-none">
+            </div>
+            <div>
+              <label class="block text-xs font-bold uppercase text-slate-400 mb-1">End Time *</label>
+              <input type="time" id="swal-shift-end" value="18:00" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white text-sm focus:border-indigo-500 focus:outline-none">
+            </div>
+          </div>
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block text-xs font-bold uppercase text-slate-400 mb-1">Grace Period (Mins)</label>
+              <input type="number" id="swal-shift-grace" value="15" min="0" max="60" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white text-sm focus:border-indigo-500 focus:outline-none">
+            </div>
+            <div>
+              <label class="block text-xs font-bold uppercase text-slate-400 mb-1">Half-Day (Hours)</label>
+              <input type="number" id="swal-shift-halfday" value="4.0" step="0.5" min="1" max="12" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white text-sm focus:border-indigo-500 focus:outline-none">
+            </div>
+          </div>
+        </div>
+      `,
+      showCancelButton: true,
+      confirmButtonText: "Create Shift",
+      confirmButtonColor: "#4f46e5",
+      preConfirm: () => {
+        const name = document.getElementById("swal-shift-name")?.value.trim();
+        const start = document.getElementById("swal-shift-start")?.value;
+        const end = document.getElementById("swal-shift-end")?.value;
+        const grace = parseInt(document.getElementById("swal-shift-grace")?.value, 10) || 15;
+        const halfday = parseFloat(document.getElementById("swal-shift-halfday")?.value) || 4.0;
+        if (!name || !start || !end) {
+          Swal.showValidationMessage("Please provide Shift Name, Start Time, and End Time");
+          return false;
+        }
+        return { name, start_time: start + ":00", end_time: end + ":00", grace_period_minutes: grace, half_day_hours: halfday };
+      }
+    });
+
+    if (!formValues) return;
+
+    try {
+      const newShift = await DB.addShift(formValues);
+      CONFIG.playSound("success");
+      await this.populateDepartmentFilters();
+      const modalShiftSelect = document.getElementById("emp-form-shift");
+      if (modalShiftSelect && newShift) {
+        modalShiftSelect.value = newShift.id;
+      }
+      Swal.fire({
+        icon: "success",
+        title: "Shift Created!",
+        text: `${formValues.name} saved to Supabase.`,
+        timer: 1600,
+        showConfirmButton: false
+      });
+    } catch (err) {
+      CONFIG.playSound("error");
+      Swal.fire({ icon: "error", title: "Failed to Add Shift", text: err.message });
+    }
+  },
+
+  async openManageDepartmentsModal() {
+    const depts = await DB.getDepartments();
+    const rowsHtml = depts.length === 0
+      ? `<p class="text-xs text-slate-400 py-4 text-center">No departments created yet.</p>`
+      : depts.map(d => `
+        <div class="flex items-center justify-between py-2 border-b border-slate-700/60 text-xs">
+          <div>
+            <span class="font-bold text-slate-200">${d.name}</span>
+            <span class="font-mono text-[10px] text-indigo-400 ml-1.5 px-1.5 py-0.5 rounded bg-indigo-500/10 border border-indigo-500/20">${d.code}</span>
+          </div>
+          <button onclick="EmployeeModule.deleteDepartmentConfirm('${d.id}', '${d.name}')" class="text-slate-400 hover:text-rose-400 p-1 transition" title="Delete">
+            <i class="fa-solid fa-trash-can text-xs"></i>
+          </button>
+        </div>
+      `).join("");
+
+    Swal.fire({
+      title: "Manage Departments",
+      html: `
+        <div class="text-left text-sm">
+          <div class="max-h-60 overflow-y-auto mb-4 divide-y divide-slate-800">
+            ${rowsHtml}
+          </div>
+          <button id="swal-btn-create-new-dept" class="w-full py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg font-bold text-xs transition">
+            <i class="fa-solid fa-plus mr-1"></i> Add Another Department
+          </button>
+        </div>
+      `,
+      showConfirmButton: false,
+      showCloseButton: true,
+      didOpen: () => {
+        document.getElementById("swal-btn-create-new-dept")?.addEventListener("click", () => {
+          Swal.close();
+          this.openQuickAddDepartmentModal();
+        });
+      }
+    });
+  },
+
+  async deleteDepartmentConfirm(id, name) {
+    const confirm = await Swal.fire({
+      title: `Delete Department?`,
+      text: `Are you sure you want to remove ${name}?`,
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Yes, Delete",
+      confirmButtonColor: "#ef4444"
+    });
+    if (!confirm.isConfirmed) return;
+
+    try {
+      await DB.deleteDepartment(id);
+      CONFIG.playSound("success");
+      await this.populateDepartmentFilters();
+      if (AttendanceModule && AttendanceModule.populateDepartmentFilter) {
+        await AttendanceModule.populateDepartmentFilter();
+      }
+      Swal.fire({ icon: "success", title: "Deleted", text: `${name} was removed.`, timer: 1500, showConfirmButton: false });
+    } catch (err) {
+      Swal.fire({ icon: "error", title: "Error", text: err.message });
     }
   },
 
@@ -380,6 +584,21 @@ const EmployeeModule = {
     const form = document.getElementById("employee-form");
     if (form) {
       form.addEventListener("submit", e => this.saveEmployeeForm(e));
+    }
+
+    const btnQuickDept = document.getElementById("btn-quick-add-dept");
+    if (btnQuickDept) {
+      btnQuickDept.addEventListener("click", () => this.openQuickAddDepartmentModal());
+    }
+
+    const btnQuickShift = document.getElementById("btn-quick-add-shift");
+    if (btnQuickShift) {
+      btnQuickShift.addEventListener("click", () => this.openQuickAddShiftModal());
+    }
+
+    const btnManageDepts = document.getElementById("btn-manage-departments");
+    if (btnManageDepts) {
+      btnManageDepts.addEventListener("click", () => this.openManageDepartmentsModal());
     }
   }
 };

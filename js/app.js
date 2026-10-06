@@ -244,56 +244,28 @@ const App = {
       });
     }
 
-    // Bootstrap / Initialize New Database Defaults (Departments, Shifts, Settings)
-    const bootstrapBtn = document.getElementById("btn-bootstrap-db");
-    if (bootstrapBtn) {
-      bootstrapBtn.addEventListener("click", async () => {
-        if (!CONFIG.isConfigured()) {
-          Swal.fire({
-            icon: "warning",
-            title: "Database Not Connected",
-            text: "Please save your Supabase URL and Anon Key first before bootstrapping."
+    // Copy Schema to Clipboard
+    const copySchemaBtn = document.getElementById("btn-copy-schema");
+    if (copySchemaBtn) {
+      copySchemaBtn.addEventListener("click", () => {
+        const schemaText = document.getElementById("schema-code-display")?.innerText;
+        if (schemaText) {
+          navigator.clipboard.writeText(schemaText).then(() => {
+            CONFIG.playSound("success");
+            copySchemaBtn.innerHTML = `<i class="fa-solid fa-check text-emerald-400 mr-1.5"></i> Copied to Clipboard!`;
+            setTimeout(() => {
+              copySchemaBtn.innerHTML = `<i class="fa-regular fa-copy mr-1.5"></i> Copy SQL Schema`;
+            }, 2500);
+            Swal.fire({
+              icon: "success",
+              title: "Schema Copied!",
+              text: "Now paste it in Supabase SQL Editor and click 'Run'.",
+              timer: 2000,
+              showConfirmButton: false
+            });
+          }).catch(() => {
+            Swal.fire({ icon: "info", title: "Copy Schema", text: "Please manually select and copy the SQL code below." });
           });
-          return;
-        }
-
-        const confirm = await Swal.fire({
-          title: "Initialize Default Database Setup?",
-          text: "This will create standard departments (Engineering, HR, Sales, etc.), shifts, and organization settings in your Supabase database if they don't already exist.",
-          icon: "question",
-          showCancelButton: true,
-          confirmButtonText: "Initialize Defaults",
-          confirmButtonColor: "#4f46e5"
-        });
-
-        if (!confirm.isConfirmed) return;
-
-        bootstrapBtn.disabled = true;
-        bootstrapBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin mr-2"></i> Creating Defaults...`;
-
-        try {
-          const res = await DB.bootstrapDatabase();
-          CONFIG.playSound("success");
-          await this.refreshAllData();
-
-          Swal.fire({
-            icon: "success",
-            title: "Database Setup Initialized!",
-            html: `
-              <div class="text-left text-xs bg-slate-800 p-3 rounded-lg space-y-1 font-mono">
-                <div>✓ ${res.departments} Departments verified/created</div>
-                <div>✓ ${res.shifts} Shifts verified/created</div>
-                <div>✓ Organization rules initialized</div>
-              </div>
-            `,
-            confirmButtonColor: "#10b981"
-          });
-        } catch (err) {
-          CONFIG.playSound("error");
-          Swal.fire({ icon: "error", title: "Initialization Failed", text: err.message });
-        } finally {
-          bootstrapBtn.disabled = false;
-          bootstrapBtn.innerHTML = `<i class="fa-solid fa-wand-magic-sparkles mr-2"></i> Initialize Default Departments & Shifts`;
         }
       });
     }
@@ -359,11 +331,28 @@ const App = {
   },
 
   setupNavigation() {
+    const sidebar = document.getElementById("app-sidebar");
+    const backdrop = document.getElementById("sidebar-backdrop");
+
+    const closeMobileSidebar = () => {
+      if (sidebar) sidebar.classList.add("-translate-x-full");
+      if (backdrop) backdrop.classList.add("hidden");
+    };
+
+    const openMobileSidebar = () => {
+      if (sidebar) sidebar.classList.remove("-translate-x-full");
+      if (backdrop) backdrop.classList.remove("hidden");
+    };
+
     document.querySelectorAll(".nav-link").forEach(link => {
       link.addEventListener("click", e => {
         e.preventDefault();
         const view = link.dataset.view;
         if (view) this.switchView(view);
+        // Automatically close sidebar on mobile tap
+        if (window.innerWidth < 768) {
+          closeMobileSidebar();
+        }
       });
     });
 
@@ -372,13 +361,27 @@ const App = {
       badge.addEventListener("click", () => this.switchView("settings"));
     }
 
-    // Mobile sidebar toggle
+    // Mobile sidebar toggle button
     const toggleBtn = document.getElementById("mobile-menu-btn");
-    const sidebar = document.getElementById("app-sidebar");
-    if (toggleBtn && sidebar) {
+    if (toggleBtn) {
       toggleBtn.addEventListener("click", () => {
-        sidebar.classList.toggle("-translate-x-full");
+        if (sidebar && sidebar.classList.contains("-translate-x-full")) {
+          openMobileSidebar();
+        } else {
+          closeMobileSidebar();
+        }
       });
+    }
+
+    // Close button inside mobile sidebar
+    const mobileCloseBtn = document.getElementById("mobile-menu-close");
+    if (mobileCloseBtn) {
+      mobileCloseBtn.addEventListener("click", closeMobileSidebar);
+    }
+
+    // Click backdrop to dismiss sidebar on mobile
+    if (backdrop) {
+      backdrop.addEventListener("click", closeMobileSidebar);
     }
   }
 };
