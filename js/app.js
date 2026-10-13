@@ -1,6 +1,6 @@
 /**
  * Main Application Orchestrator
- * Controls navigation, Supabase connectivity, database initialization, and view routing
+ * Controls navigation, Supabase connectivity, database initialization, teacher & student workflows, and view routing
  */
 
 const App = {
@@ -9,18 +9,20 @@ const App = {
   async init() {
     console.log("Initializing Attendance Management System...");
 
-    // 1. Initialize Configuration & Database
-    const isConnected = CONFIG.init();
-    DB.init();
+    // 1. Initialize Configuration & Database (Web Crypto AES-GCM)
+    const isConnected = await CONFIG.init();
+    await DB.init();
 
-    // 2. Setup Top-bar Connection Badge & Nav
+    // 2. Setup Top-bar Connection Badge, Dynamic UI Visibility, and Nav
     this.updateConnectionBadge();
+    this.updateConnectionUI();
     this.setupNavigation();
     this.setupSettingsView();
 
     // 3. Initialize Child Modules
     AttendanceModule.init();
     EmployeeModule.init();
+    await StudentModule.init();
     LeaveModule.init();
     ReportsModule.init();
 
@@ -30,12 +32,13 @@ const App = {
       this.showSetupNotification();
       this.switchView("settings");
     } else {
-      // Load real Supabase data
+      // Load live Supabase data for staff and students
       await this.refreshAllData();
 
       // Route to requested hash or dashboard
       const hash = window.location.hash.replace("#", "");
-      if (hash && ["dashboard", "kiosk", "attendance", "employees", "leaves", "reports", "settings"].includes(hash)) {
+      const validViews = ["dashboard", "kiosk", "attendance", "employees", "classroom", "students", "leaves", "reports", "settings"];
+      if (hash && validViews.includes(hash)) {
         this.switchView(hash);
       } else {
         this.switchView("dashboard");
@@ -47,6 +50,7 @@ const App = {
 
   async refreshAllData() {
     await EmployeeModule.loadEmployees();
+    await StudentModule.refreshData();
     await AttendanceModule.populateEmployeeSelect();
     await AttendanceModule.refreshDailyAttendanceTable();
     await this.refreshDashboardStats();
@@ -98,12 +102,18 @@ const App = {
       AttendanceModule.refreshDailyAttendanceTable();
     } else if (viewName === "employees") {
       EmployeeModule.loadEmployees();
+    } else if (viewName === "classroom") {
+      StudentModule.loadClassroomRoster();
+    } else if (viewName === "students") {
+      StudentModule.renderStudentDirectory();
+      StudentModule.renderClassesList();
     } else if (viewName === "leaves") {
       LeaveModule.loadLeaves();
     } else if (viewName === "reports") {
       ReportsModule.loadReports();
     } else if (viewName === "settings") {
       this.populateSettingsForm();
+      this.updateConnectionUI();
     }
 
     // Scroll to top of content
@@ -127,17 +137,43 @@ const App = {
     }
   },
 
+  /**
+   * Toggles database credentials card vs setup inputs.
+   * If database is connected, Test Connection & Save Database buttons MUST NOT appear.
+   */
+  updateConnectionUI() {
+    const connectedCard = document.getElementById("db-connected-card");
+    const setupForm = document.getElementById("db-setup-form");
+    const displayUrl = document.getElementById("display-connected-url");
+    const displayKey = document.getElementById("display-connected-key");
+
+    if (CONFIG.isConfigured()) {
+      // Connected State: Hide setup form & buttons; show secure status card
+      if (setupForm) setupForm.classList.add("hidden");
+      if (connectedCard) connectedCard.classList.remove("hidden");
+
+      if (displayUrl) displayUrl.textContent = CONFIG.currentUrl;
+      if (displayKey) {
+        displayKey.textContent = CONFIG.maskKey(CONFIG.currentKey);
+        displayKey.dataset.masked = "true";
+      }
+    } else {
+      // Disconnected State: Show setup inputs, test button, and save button
+      if (connectedCard) connectedCard.classList.add("hidden");
+      if (setupForm) setupForm.classList.remove("hidden");
+
+      const urlInput = document.getElementById("settings-supabase-url");
+      const keyInput = document.getElementById("settings-supabase-key");
+      if (urlInput) urlInput.value = CONFIG.currentUrl || "";
+      if (keyInput) keyInput.value = CONFIG.currentKey || "";
+    }
+  },
+
   // ==========================================
   // SETTINGS & SUPABASE CONNECTIVITY
   // ==========================================
   populateSettingsForm() {
-    const creds = CONFIG.getCredentials();
-    const urlInput = document.getElementById("settings-supabase-url");
-    const keyInput = document.getElementById("settings-supabase-key");
-
-    if (urlInput) urlInput.value = creds.url;
-    if (keyInput) keyInput.value = creds.anonKey;
-
+    this.updateConnectionUI();
     this.loadCompanySettings();
   },
 
@@ -155,7 +191,38 @@ const App = {
   },
 
   setupSettingsView() {
-    // Test Supabase Connection
+    // 1. Password input visibility toggler (Setup form)
+    const toggleKeyBtn = document.getElementById("btn-toggle-key-visibility");
+    const keyInput = document.getElementById("settings-supabase-key");
+    if (toggleKeyBtn && keyInput) {
+      toggleKeyBtn.addEventListener("click", () => {
+        const isPassword = keyInput.type === "password";
+        keyInput.type = isPassword ? "text" : "password";
+        toggleKeyBtn.innerHTML = isPassword
+          ? `<i class="fa-solid fa-eye-slash text-xs"></i>`
+          : `<i class="fa-solid fa-eye text-xs"></i>`;
+      });
+    }
+
+    // 2. Connected Key unmasking toggler (Connected card)
+    const toggleConnectedKeyBtn = document.getElementById("btn-toggle-connected-key");
+    const displayKey = document.getElementById("display-connected-key");
+    if (toggleConnectedKeyBtn && displayKey) {
+      toggleConnectedKeyBtn.addEventListener("click", () => {
+        const isMasked = displayKey.dataset.masked === "true";
+        if (isMasked) {
+          displayKey.textContent = CONFIG.currentKey;
+          displayKey.dataset.masked = "false";
+          toggleConnectedKeyBtn.innerHTML = `<i class="fa-solid fa-eye-slash text-xs"></i>`;
+        } else {
+          displayKey.textContent = CONFIG.maskKey(CONFIG.currentKey);
+          displayKey.dataset.masked = "true";
+          toggleConnectedKeyBtn.innerHTML = `<i class="fa-solid fa-eye text-xs"></i>`;
+        }
+      });
+    }
+
+    // 3. Test Supabase Connection (Only visible when disconnected)
     const testBtn = document.getElementById("btn-test-supabase");
     if (testBtn) {
       testBtn.addEventListener("click", async () => {
@@ -174,6 +241,20 @@ const App = {
 
         testBtn.disabled = false;
         testBtn.innerHTML = `<i class="fa-solid fa-plug mr-2"></i> Test Connection`;
+
+        if (res.securityViolation) {
+          CONFIG.playSound("error");
+          Swal.fire({
+            icon: "error",
+            title: "Security Violation",
+            html: `<div class="text-left text-xs space-y-2">
+              <p><b>Never enter a service_role secret key in frontend applications!</b></p>
+              <p>Service-role keys bypass Row Level Security and expose full administrative rights. Please provide your public <b>anon</b> key from Supabase Dashboard -> Project Settings -> API.</p>
+            </div>`,
+            confirmButtonColor: "#ef4444"
+          });
+          return;
+        }
 
         if (res.success) {
           if (res.warning) {
@@ -204,7 +285,7 @@ const App = {
       });
     }
 
-    // Save Supabase Credentials
+    // 4. Save Supabase Credentials (Only visible when disconnected)
     const saveDbBtn = document.getElementById("btn-save-db-settings");
     if (saveDbBtn) {
       saveDbBtn.addEventListener("click", async () => {
@@ -217,34 +298,51 @@ const App = {
         }
 
         saveDbBtn.disabled = true;
-        saveDbBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin mr-2"></i> Connecting...`;
+        saveDbBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin mr-2"></i> Securing & Connecting...`;
 
-        const connected = CONFIG.saveCredentials(url, key);
-        this.updateConnectionBadge();
+        const result = await CONFIG.saveCredentials(url, key);
 
-        if (connected) {
+        saveDbBtn.disabled = false;
+        saveDbBtn.innerHTML = `<i class="fa-solid fa-floppy-disk mr-2"></i> Save & Connect Database`;
+
+        if (result.securityViolation) {
+          CONFIG.playSound("error");
+          Swal.fire({
+            icon: "error",
+            title: "Security Alert: service_role Blocked",
+            html: `<div class="text-left text-xs space-y-2">
+              <p><b>You entered a service_role admin secret key.</b></p>
+              <p>To protect your database integrity, frontend client applications are prohibited from using service_role credentials. Row Level Security must be enforced via the public <b>anon</b> key.</p>
+              <p>Please enter your public <b>anon</b> key from Supabase Project Settings -> API.</p>
+            </div>`,
+            confirmButtonColor: "#ef4444"
+          });
+          return;
+        }
+
+        if (result.success) {
+          this.updateConnectionBadge();
+          this.updateConnectionUI(); // Hides test & save buttons immediately!
           this.hideSetupNotification();
           CONFIG.playSound("success");
+
           await this.refreshAllData();
 
           Swal.fire({
             icon: "success",
-            title: "Connected to Supabase!",
-            text: "All personnel, attendance records, and leave requests will now be retrieved directly from your Supabase database.",
+            title: "Connected & Secured!",
+            text: "Your database is now connected. All employee and student records are synchronized directly with Supabase.",
             timer: 2200,
             showConfirmButton: false
           });
         } else {
           CONFIG.playSound("error");
-          Swal.fire({ icon: "error", title: "Configuration Error", text: "Could not initialize Supabase client with provided credentials." });
+          Swal.fire({ icon: "error", title: "Configuration Error", text: result.message || "Could not initialize Supabase client." });
         }
-
-        saveDbBtn.disabled = false;
-        saveDbBtn.innerHTML = `<i class="fa-solid fa-floppy-disk mr-2"></i> Save & Connect Database`;
       });
     }
 
-    // Copy Schema to Clipboard
+    // 5. Copy Schema to Clipboard
     const copySchemaBtn = document.getElementById("btn-copy-schema");
     if (copySchemaBtn) {
       copySchemaBtn.addEventListener("click", () => {
@@ -270,13 +368,13 @@ const App = {
       });
     }
 
-    // Disconnect / Clear Credentials
+    // 6. Disconnect / Clear Credentials (Re-enables setup form with Test & Save buttons)
     const clearBtn = document.getElementById("btn-disconnect-db");
     if (clearBtn) {
       clearBtn.addEventListener("click", async () => {
         const confirm = await Swal.fire({
           title: "Disconnect Supabase?",
-          text: "This will remove stored credentials from this browser session.",
+          text: "This will remove encrypted credentials from this browser session. The setup buttons will reappear to enter new credentials.",
           icon: "warning",
           showCancelButton: true,
           confirmButtonText: "Yes, Disconnect",
@@ -287,16 +385,15 @@ const App = {
 
         CONFIG.clearCredentials();
         this.updateConnectionBadge();
+        this.updateConnectionUI(); // Re-displays setup form and test/save buttons!
         this.showSetupNotification();
-        document.getElementById("settings-supabase-url").value = "";
-        document.getElementById("settings-supabase-key").value = "";
 
         await this.refreshAllData();
         Swal.fire({ icon: "info", title: "Disconnected", text: "Supabase credentials cleared.", timer: 1500, showConfirmButton: false });
       });
     }
 
-    // Save General Company Settings
+    // 7. Save General Company Settings
     const saveCompanyBtn = document.getElementById("btn-save-company-settings");
     if (saveCompanyBtn) {
       saveCompanyBtn.addEventListener("click", async () => {

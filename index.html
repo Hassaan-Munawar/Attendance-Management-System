@@ -109,6 +109,23 @@
           <span>Timesheet & Export</span>
         </a>
 
+        <!-- Academic & Teacher Section -->
+        <div class="pt-2 pb-1 px-3">
+          <span class="text-[10px] font-bold uppercase tracking-wider text-slate-500">Teacher & Students</span>
+        </div>
+
+        <a href="#classroom" data-view="classroom"
+           class="nav-link flex items-center gap-3 px-3.5 py-3 md:py-2.5 rounded-xl text-sm font-semibold transition-all text-slate-400 hover:bg-slate-800/70 hover:text-slate-200 active:scale-98">
+          <i class="fa-solid fa-chalkboard-user w-5 text-center text-base text-emerald-400"></i>
+          <span>Classroom Roll Call</span>
+        </a>
+
+        <a href="#students" data-view="students"
+           class="nav-link flex items-center gap-3 px-3.5 py-3 md:py-2.5 rounded-xl text-sm font-semibold transition-all text-slate-400 hover:bg-slate-800/70 hover:text-slate-200 active:scale-98">
+          <i class="fa-solid fa-graduation-cap w-5 text-center text-base text-indigo-400"></i>
+          <span>Students & Classes</span>
+        </a>
+
         <a href="#settings" data-view="settings"
            class="nav-link flex items-center gap-3 px-3.5 py-3 md:py-2.5 rounded-xl text-sm font-semibold transition-all text-slate-400 hover:bg-slate-800/70 hover:text-slate-200 active:scale-98">
           <i class="fa-solid fa-database w-5 text-center text-base"></i>
@@ -745,6 +762,187 @@
       </section>
 
       <!-- ==========================================================================
+           VIEW: CLASSROOM ROLL CALL (FOR TEACHERS)
+           ========================================================================== -->
+      <section id="view-classroom" class="view-section hidden space-y-6">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div>
+            <h2 class="text-xl sm:text-2xl font-bold tracking-tight text-white flex items-center gap-2">
+              <i class="fa-solid fa-chalkboard-user text-emerald-400"></i> Teacher Classroom Roll Call
+            </h2>
+            <p class="text-xs sm:text-sm text-slate-400 mt-1">Record and manage daily student attendance for your classes</p>
+          </div>
+          <div class="flex items-center gap-2">
+            <button onclick="StudentModule.openAddClassModal()"
+                    class="px-3.5 py-2 text-xs font-semibold rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 transition flex items-center gap-1.5 active:scale-95">
+              <i class="fa-solid fa-plus text-indigo-400"></i> <span>New Class</span>
+            </button>
+            <button onclick="StudentModule.openAddStudentModal()"
+                    class="px-3.5 py-2 text-xs font-semibold rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white shadow-lg shadow-indigo-600/25 transition flex items-center gap-1.5 active:scale-95">
+              <i class="fa-solid fa-user-plus"></i> <span>Enroll Student</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Controls Toolbar: Class Selection, Date, and Batch Operations -->
+        <div class="glass-panel rounded-2xl p-4 sm:p-5 border border-slate-800 space-y-4">
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+            <!-- Class Selector -->
+            <div>
+              <label class="block text-xs font-bold uppercase text-slate-400 mb-1">Classroom / Grade *</label>
+              <select id="classroom-class-select" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-xs sm:text-sm text-white focus:border-indigo-500 focus:outline-none"></select>
+            </div>
+
+            <!-- Date Picker with Prev / Next -->
+            <div>
+              <label class="block text-xs font-bold uppercase text-slate-400 mb-1">Attendance Date *</label>
+              <div class="flex items-center gap-1.5">
+                <button type="button" id="btn-classroom-prev-day" class="p-2.5 rounded-xl bg-slate-950 border border-slate-800 text-slate-400 hover:text-white hover:border-slate-700 transition" title="Previous Day">
+                  <i class="fa-solid fa-chevron-left text-xs"></i>
+                </button>
+                <input type="date" id="classroom-date-picker" class="flex-1 bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-xs sm:text-sm text-white focus:border-indigo-500 focus:outline-none">
+                <button type="button" id="btn-classroom-next-day" class="p-2.5 rounded-xl bg-slate-950 border border-slate-800 text-slate-400 hover:text-white hover:border-slate-700 transition" title="Next Day">
+                  <i class="fa-solid fa-chevron-right text-xs"></i>
+                </button>
+              </div>
+            </div>
+
+            <!-- Quick Batch Mark Buttons -->
+            <div class="sm:col-span-2 flex flex-wrap items-end gap-2 pt-1 sm:pt-0">
+              <button type="button" id="btn-mark-all-present"
+                      class="flex-1 px-3 py-2.5 rounded-xl text-xs font-semibold bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 transition flex items-center justify-center gap-1.5 active:scale-95">
+                <i class="fa-solid fa-check-double text-xs"></i> Mark All Present
+              </button>
+              <button type="button" id="btn-mark-all-absent"
+                      class="flex-1 px-3 py-2.5 rounded-xl text-xs font-semibold bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/30 transition flex items-center justify-center gap-1.5 active:scale-95">
+                <i class="fa-solid fa-user-xmark text-xs"></i> Mark All Absent
+              </button>
+              <button type="button" id="btn-save-class-attendance"
+                      class="w-full sm:w-auto px-5 py-2.5 rounded-xl text-xs font-bold bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white shadow-lg shadow-emerald-600/30 transition flex items-center justify-center gap-2 active:scale-95">
+                <i class="fa-solid fa-cloud-arrow-up text-sm"></i> Save Attendance
+              </button>
+            </div>
+          </div>
+
+          <!-- Roll Call Metrics Live Bar -->
+          <div id="classroom-summary-bar" class="pt-3 border-t border-slate-800/80 grid grid-cols-2 sm:grid-cols-5 gap-2 text-center">
+            <div class="bg-slate-950/60 p-2.5 rounded-xl border border-slate-800">
+              <span class="text-[10px] uppercase font-bold text-slate-400">Enrolled</span>
+              <p id="classroom-stat-total" class="text-base sm:text-lg font-extrabold text-white">0</p>
+            </div>
+            <div class="bg-emerald-500/10 p-2.5 rounded-xl border border-emerald-500/20">
+              <span class="text-[10px] uppercase font-bold text-emerald-400">Present</span>
+              <p id="classroom-stat-present" class="text-base sm:text-lg font-extrabold text-emerald-400">0</p>
+            </div>
+            <div class="bg-rose-500/10 p-2.5 rounded-xl border border-rose-500/20">
+              <span class="text-[10px] uppercase font-bold text-rose-400">Absent</span>
+              <p id="classroom-stat-absent" class="text-base sm:text-lg font-extrabold text-rose-400">0</p>
+            </div>
+            <div class="bg-amber-500/10 p-2.5 rounded-xl border border-amber-500/20">
+              <span class="text-[10px] uppercase font-bold text-amber-400">Late</span>
+              <p id="classroom-stat-late" class="text-base sm:text-lg font-extrabold text-amber-400">0</p>
+            </div>
+            <div class="col-span-2 sm:col-span-1 bg-indigo-500/10 p-2.5 rounded-xl border border-indigo-500/20">
+              <span class="text-[10px] uppercase font-bold text-indigo-400">Present Rate</span>
+              <p id="classroom-stat-rate" class="text-base sm:text-lg font-extrabold text-indigo-300">0%</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Student Roster Grid -->
+        <div id="classroom-roster-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
+          <!-- Dynamically populated cards -->
+        </div>
+
+        <!-- Empty State Message -->
+        <div id="classroom-empty-state" class="hidden glass-panel p-12 text-center rounded-2xl border border-slate-800">
+          <div class="w-16 h-16 rounded-2xl bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 flex items-center justify-center text-2xl mx-auto mb-3">
+            <i class="fa-solid fa-graduation-cap"></i>
+          </div>
+          <h3 class="font-bold text-white text-base">Classroom Ready</h3>
+          <p class="empty-msg text-xs text-slate-400 mt-1 max-w-md mx-auto">Select a classroom above to begin student roll call.</p>
+        </div>
+      </section>
+
+      <!-- ==========================================================================
+           VIEW: STUDENTS & CLASSES DIRECTORY
+           ========================================================================== -->
+      <section id="view-students" class="view-section hidden space-y-6">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div>
+            <h2 class="text-xl sm:text-2xl font-bold tracking-tight text-white flex items-center gap-2">
+              <i class="fa-solid fa-graduation-cap text-indigo-400"></i> Students & Classes Directory
+            </h2>
+            <p class="text-xs sm:text-sm text-slate-400 mt-1">Manage classrooms, student enrollments, and academic rosters</p>
+          </div>
+          <div class="flex items-center gap-2">
+            <button onclick="StudentModule.openAddClassModal()"
+                    class="px-3.5 py-2 text-xs font-semibold rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 transition flex items-center gap-1.5 active:scale-95">
+              <i class="fa-solid fa-chalkboard text-indigo-400"></i> <span>+ Add Class</span>
+            </button>
+            <button onclick="StudentModule.openAddStudentModal()"
+                    class="px-3.5 py-2 text-xs font-semibold rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white shadow-lg shadow-indigo-600/25 transition flex items-center gap-1.5 active:scale-95">
+              <i class="fa-solid fa-user-plus"></i> <span>+ Add Student</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Section 1: Registered Classes -->
+        <div class="space-y-3">
+          <div class="flex items-center justify-between">
+            <h3 class="font-bold text-sm text-white uppercase tracking-wider text-slate-300 flex items-center gap-2">
+              <i class="fa-solid fa-school text-indigo-400"></i> Active Classes & Grades
+            </h3>
+          </div>
+          <div id="classes-list-container" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+            <!-- Classes dynamically rendered -->
+          </div>
+        </div>
+
+        <!-- Section 2: Student Directory -->
+        <div class="glass-panel rounded-2xl border border-slate-800 overflow-hidden shadow-xl space-y-4 p-4 sm:p-5">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-800">
+            <div class="flex items-center gap-2">
+              <h3 class="font-bold text-sm text-white">Student Enrollment List</h3>
+              <span id="student-directory-count" class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-indigo-500/20 text-indigo-300 font-mono">0 Students</span>
+            </div>
+
+            <!-- Filters -->
+            <div class="flex flex-wrap items-center gap-2">
+              <select id="filter-student-class" class="bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500"></select>
+              <div class="relative">
+                <input type="text" id="search-student-input" placeholder="Search name or roll #..." class="bg-slate-950 border border-slate-800 rounded-xl pl-8 pr-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500">
+                <i class="fa-solid fa-magnifying-glass absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-500 text-xs"></i>
+              </div>
+              <button id="btn-export-student-attendance"
+                      class="px-3 py-2 rounded-xl text-xs font-semibold bg-emerald-600/20 hover:bg-emerald-600 text-emerald-300 hover:text-white border border-emerald-500/30 transition flex items-center gap-1.5 active:scale-95" title="Export Student Records to Excel">
+                <i class="fa-solid fa-file-excel text-xs"></i> <span>Export .xlsx</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Students Table -->
+          <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse min-w-[650px]">
+              <thead>
+                <tr class="border-b border-slate-800 text-[11px] font-bold uppercase tracking-wider text-slate-400">
+                  <th class="p-3">Roll #</th>
+                  <th class="p-3">Student Name</th>
+                  <th class="p-3">Class / Section</th>
+                  <th class="p-3">Guardian Contact</th>
+                  <th class="p-3">Status</th>
+                  <th class="p-3 text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="student-directory-body">
+                <!-- Dynamically populated rows -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==========================================================================
            VIEW 7: DATABASE & SYSTEM SETTINGS + SQL SCHEMA DISPLAY
            ========================================================================== -->
       <section id="view-settings" class="view-section hidden space-y-6">
@@ -770,32 +968,86 @@
                 </div>
               </div>
 
-              <div class="space-y-4">
-                <div>
-                  <label class="block text-xs font-bold uppercase text-slate-400 mb-1">Supabase Project URL *</label>
-                  <input type="text" id="settings-supabase-url" placeholder="https://yourprojectid.supabase.co" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-xs sm:text-sm text-white font-mono focus:border-indigo-500 focus:outline-none">
+              <!-- CONNECTED STATE (Visible when database is connected: Test & Save buttons do NOT appear) -->
+              <div id="db-connected-card" class="hidden space-y-4">
+                <div class="p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/20 space-y-3">
+                  <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-2 text-emerald-400 text-xs font-bold">
+                      <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                      <span>Connected & Secured via Web Crypto AES-GCM</span>
+                    </div>
+                    <span class="text-[10px] uppercase font-mono px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 font-bold">Encrypted Storage</span>
+                  </div>
+
+                  <div class="space-y-2 text-xs">
+                    <div>
+                      <span class="text-slate-400 block text-[11px] font-bold uppercase">Connected Project URL:</span>
+                      <span id="display-connected-url" class="font-mono text-white text-xs select-all"></span>
+                    </div>
+                    <div>
+                      <span class="text-slate-400 block text-[11px] font-bold uppercase">Public Anon Key:</span>
+                      <div class="flex items-center gap-2">
+                        <span id="display-connected-key" class="font-mono text-indigo-300 text-xs select-all">••••••••••••••••••••</span>
+                        <button type="button" id="btn-toggle-connected-key" class="p-1 text-slate-400 hover:text-white transition" title="Toggle key visibility">
+                          <i class="fa-solid fa-eye text-xs"></i>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="pt-2 border-t border-emerald-500/15 flex items-center gap-2 text-[11px] text-emerald-300/80">
+                    <i class="fa-solid fa-shield-halved text-emerald-400"></i>
+                    <span>Service-role admin keys are rejected. Credentials protected in local Web Crypto store.</span>
+                  </div>
                 </div>
 
-                <div>
-                  <label class="block text-xs font-bold uppercase text-slate-400 mb-1">Supabase Anon Public API Key *</label>
-                  <input type="password" id="settings-supabase-key" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..." class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-xs sm:text-sm text-white font-mono focus:border-indigo-500 focus:outline-none">
+                <div class="flex items-center justify-end pt-1">
+                  <button id="btn-disconnect-db"
+                          class="px-4 py-2.5 text-xs font-semibold rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/20 transition flex items-center gap-2 active:scale-95">
+                    <i class="fa-solid fa-link-slash"></i> Disconnect / Change Credentials
+                  </button>
                 </div>
               </div>
 
-              <!-- Action Buttons -->
-              <div class="flex flex-wrap items-center gap-2.5 sm:gap-3 pt-2">
-                <button id="btn-test-supabase"
-                        class="px-4 py-2.5 text-xs font-semibold rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition flex items-center gap-2 active:scale-95">
-                  <i class="fa-solid fa-plug"></i> Test Connection
-                </button>
-                <button id="btn-save-db-settings"
-                        class="px-5 py-2.5 text-xs font-semibold rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white shadow-lg shadow-indigo-600/25 transition flex items-center gap-2 active:scale-95">
-                  <i class="fa-solid fa-floppy-disk"></i> Save & Connect Database
-                </button>
-                <button id="btn-disconnect-db"
-                        class="px-4 py-2.5 text-xs font-semibold rounded-xl bg-slate-800 hover:bg-rose-500/10 hover:text-rose-400 text-slate-400 border border-slate-700 hover:border-rose-500/30 transition flex items-center gap-2 sm:ml-auto active:scale-95">
-                  <i class="fa-solid fa-link-slash"></i> Disconnect
-                </button>
+              <!-- DISCONNECTED / SETUP FORM (Visible only when disconnected: Test & Save buttons appear here) -->
+              <div id="db-setup-form" class="space-y-4">
+                <div class="p-3 rounded-xl bg-indigo-500/10 border border-indigo-500/20 text-xs text-indigo-300 flex items-start gap-2.5">
+                  <i class="fa-solid fa-shield-halved text-base text-indigo-400 mt-0.5 flex-shrink-0"></i>
+                  <div>
+                    <strong class="font-bold">Credential Security Active:</strong>
+                    Provide your project's <code class="bg-indigo-950/80 px-1 rounded text-indigo-200">anon</code> key only. Do NOT provide your <code class="bg-indigo-950/80 px-1 rounded text-rose-300">service_role</code> key (it is blocked to prevent admin data exposure). Keys are encrypted using Web Crypto AES-GCM before browser storage.
+                  </div>
+                </div>
+
+                <div>
+                  <label class="block text-xs font-bold uppercase text-slate-400 mb-1">Supabase Project URL *</label>
+                  <input type="text" id="settings-supabase-url" placeholder="https://yourprojectid.supabase.co" autocomplete="off" spellcheck="false" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-xs sm:text-sm text-white font-mono focus:border-indigo-500 focus:outline-none">
+                </div>
+
+                <div>
+                  <div class="flex items-center justify-between mb-1">
+                    <label class="block text-xs font-bold uppercase text-slate-400">Supabase Anon Public API Key *</label>
+                    <span class="text-[10px] text-emerald-400 font-semibold"><i class="fa-solid fa-lock text-[9px]"></i> Encrypted on Save</span>
+                  </div>
+                  <div class="relative">
+                    <input type="password" id="settings-supabase-key" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..." autocomplete="off" spellcheck="false" class="w-full bg-slate-950 border border-slate-800 rounded-xl pl-4 pr-10 py-2.5 text-xs sm:text-sm text-white font-mono focus:border-indigo-500 focus:outline-none">
+                    <button type="button" id="btn-toggle-key-visibility" class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white p-1" title="Toggle visibility">
+                      <i class="fa-solid fa-eye text-xs"></i>
+                    </button>
+                  </div>
+                </div>
+
+                <!-- Action Buttons: Hidden when connected! -->
+                <div class="flex flex-wrap items-center gap-2.5 sm:gap-3 pt-2">
+                  <button id="btn-test-supabase"
+                          class="px-4 py-2.5 text-xs font-semibold rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition flex items-center gap-2 active:scale-95">
+                    <i class="fa-solid fa-plug"></i> Test Connection
+                  </button>
+                  <button id="btn-save-db-settings"
+                          class="px-5 py-2.5 text-xs font-semibold rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white shadow-lg shadow-indigo-600/25 transition flex items-center gap-2 active:scale-95">
+                    <i class="fa-solid fa-floppy-disk"></i> Save & Connect Database
+                  </button>
+                </div>
               </div>
             </div>
 
@@ -844,10 +1096,16 @@
               </div>
 
               <div class="relative">
-                <pre class="bg-slate-950 p-4 rounded-xl border border-slate-800 text-[11px] font-mono text-indigo-200 overflow-x-auto max-h-72 select-all leading-relaxed"><code id="schema-code-display">-- Enable UUID extension
+                <pre class="bg-slate-950 p-4 rounded-xl border border-slate-800 text-[11px] font-mono text-indigo-200 overflow-x-auto max-h-72 select-all leading-relaxed"><code id="schema-code-display">-- ==============================================================================
+-- Attendance Management System - Production Database Schema for Supabase
+-- Supports both Institutional Staff/Teachers and Classroom Student Attendance
+-- Run this script in your Supabase SQL Editor (Dashboard -> SQL Editor -> New Query)
+-- ==============================================================================
+
+-- Enable UUID extension if not enabled
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
--- 1. DEPARTMENTS TABLE
+-- 1. DEPARTMENTS TABLE (Faculties / Academic Departments)
 CREATE TABLE IF NOT EXISTS departments (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     name VARCHAR(100) NOT NULL UNIQUE,
@@ -856,7 +1114,7 @@ CREATE TABLE IF NOT EXISTS departments (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
 );
 
--- 2. SHIFTS TABLE
+-- 2. SHIFTS TABLE (Staff / Teacher Shifts)
 CREATE TABLE IF NOT EXISTS shifts (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     name VARCHAR(100) NOT NULL,
@@ -867,7 +1125,7 @@ CREATE TABLE IF NOT EXISTS shifts (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
 );
 
--- 3. EMPLOYEES TABLE
+-- 3. EMPLOYEES TABLE (Teachers, Instructors, and Staff)
 CREATE TABLE IF NOT EXISTS employees (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     employee_code VARCHAR(50) NOT NULL UNIQUE,
@@ -885,7 +1143,7 @@ CREATE TABLE IF NOT EXISTS employees (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
 );
 
--- 4. ATTENDANCE TABLE (No location tracking)
+-- 4. STAFF ATTENDANCE TABLE (Teachers & Staff)
 CREATE TABLE IF NOT EXISTS attendance (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     employee_id UUID NOT NULL REFERENCES employees(id) ON DELETE CASCADE,
@@ -902,7 +1160,46 @@ CREATE TABLE IF NOT EXISTS attendance (
     CONSTRAINT unique_employee_date UNIQUE (employee_id, date)
 );
 
--- 5. LEAVE REQUESTS TABLE
+-- 5. CLASSES / GRADES TABLE (Classrooms, Grades, Sections for Teachers)
+CREATE TABLE IF NOT EXISTS classes (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    name VARCHAR(100) NOT NULL,
+    section VARCHAR(50),
+    teacher_name VARCHAR(100),
+    room_number VARCHAR(50),
+    description TEXT,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL,
+    CONSTRAINT unique_class_section UNIQUE (name, section)
+);
+
+-- 6. STUDENTS TABLE
+CREATE TABLE IF NOT EXISTS students (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    roll_number VARCHAR(50) NOT NULL UNIQUE,
+    first_name VARCHAR(100) NOT NULL,
+    last_name VARCHAR(100) NOT NULL,
+    email VARCHAR(150),
+    guardian_phone VARCHAR(30),
+    class_id UUID REFERENCES classes(id) ON DELETE SET NULL,
+    avatar_url TEXT,
+    status VARCHAR(20) DEFAULT 'active' CHECK (status IN ('active', 'inactive')),
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
+);
+
+-- 7. STUDENT ATTENDANCE TABLE (Classroom Roll-Call Attendance)
+CREATE TABLE IF NOT EXISTS student_attendance (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    student_id UUID NOT NULL REFERENCES students(id) ON DELETE CASCADE,
+    class_id UUID NOT NULL REFERENCES classes(id) ON DELETE CASCADE,
+    date DATE NOT NULL,
+    status VARCHAR(20) NOT NULL CHECK (status IN ('present', 'absent', 'late', 'excused')),
+    remarks TEXT,
+    marked_by VARCHAR(100),
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL,
+    CONSTRAINT unique_student_class_date UNIQUE (student_id, class_id, date)
+);
+
+-- 8. LEAVE REQUESTS TABLE (Staff & Student Leave Requests)
 CREATE TABLE IF NOT EXISTS leave_requests (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     employee_id UUID NOT NULL REFERENCES employees(id) ON DELETE CASCADE,
@@ -917,14 +1214,15 @@ CREATE TABLE IF NOT EXISTS leave_requests (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
 );
 
--- 6. COMPANY SETTINGS TABLE
+-- 9. ORGANIZATION SETTINGS TABLE
 CREATE TABLE IF NOT EXISTS organization_settings (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    company_name VARCHAR(150) DEFAULT 'My Organization',
+    company_name VARCHAR(150) DEFAULT 'Apex Academy & Enterprise',
     office_start_time TIME DEFAULT '09:00:00',
     office_end_time TIME DEFAULT '18:00:00',
     grace_period_minutes INTEGER DEFAULT 15,
     allow_camera_snapshot BOOLEAN DEFAULT TRUE,
+    system_type VARCHAR(50) DEFAULT 'academic',
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
 );
 
@@ -933,6 +1231,9 @@ CREATE INDEX IF NOT EXISTS idx_attendance_date ON attendance(date);
 CREATE INDEX IF NOT EXISTS idx_attendance_emp_date ON attendance(employee_id, date);
 CREATE INDEX IF NOT EXISTS idx_employees_status ON employees(status);
 CREATE INDEX IF NOT EXISTS idx_employees_dept ON employees(department_id);
+CREATE INDEX IF NOT EXISTS idx_students_class ON students(class_id);
+CREATE INDEX IF NOT EXISTS idx_student_att_date ON student_attendance(date);
+CREATE INDEX IF NOT EXISTS idx_student_att_lookup ON student_attendance(class_id, date);
 CREATE INDEX IF NOT EXISTS idx_leave_requests_emp ON leave_requests(employee_id);
 CREATE INDEX IF NOT EXISTS idx_leave_requests_status ON leave_requests(status);
 
@@ -941,6 +1242,9 @@ ALTER TABLE departments ENABLE ROW LEVEL SECURITY;
 ALTER TABLE shifts ENABLE ROW LEVEL SECURITY;
 ALTER TABLE employees ENABLE ROW LEVEL SECURITY;
 ALTER TABLE attendance ENABLE ROW LEVEL SECURITY;
+ALTER TABLE classes ENABLE ROW LEVEL SECURITY;
+ALTER TABLE students ENABLE ROW LEVEL SECURITY;
+ALTER TABLE student_attendance ENABLE ROW LEVEL SECURITY;
 ALTER TABLE leave_requests ENABLE ROW LEVEL SECURITY;
 ALTER TABLE organization_settings ENABLE ROW LEVEL SECURITY;
 
@@ -956,6 +1260,15 @@ CREATE POLICY "Allow anon write employees" ON employees FOR ALL USING (true);
 CREATE POLICY "Allow anon read attendance" ON attendance FOR SELECT USING (true);
 CREATE POLICY "Allow anon write attendance" ON attendance FOR ALL USING (true);
 
+CREATE POLICY "Allow anon read classes" ON classes FOR SELECT USING (true);
+CREATE POLICY "Allow anon write classes" ON classes FOR ALL USING (true);
+
+CREATE POLICY "Allow anon read students" ON students FOR SELECT USING (true);
+CREATE POLICY "Allow anon write students" ON students FOR ALL USING (true);
+
+CREATE POLICY "Allow anon read student_attendance" ON student_attendance FOR SELECT USING (true);
+CREATE POLICY "Allow anon write student_attendance" ON student_attendance FOR ALL USING (true);
+
 CREATE POLICY "Allow anon read leave_requests" ON leave_requests FOR SELECT USING (true);
 CREATE POLICY "Allow anon write leave_requests" ON leave_requests FOR ALL USING (true);
 
@@ -964,8 +1277,10 @@ CREATE POLICY "Allow anon write settings" ON organization_settings FOR ALL USING
 
 -- Enable Realtime
 ALTER PUBLICATION supabase_realtime ADD TABLE attendance;
+ALTER PUBLICATION supabase_realtime ADD TABLE student_attendance;
 ALTER PUBLICATION supabase_realtime ADD TABLE leave_requests;
-ALTER PUBLICATION supabase_realtime ADD TABLE employees;</code></pre>
+ALTER PUBLICATION supabase_realtime ADD TABLE employees;
+ALTER PUBLICATION supabase_realtime ADD TABLE students;</code></pre>
               </div>
             </div>
           </div>
@@ -1164,6 +1479,121 @@ ALTER PUBLICATION supabase_realtime ADD TABLE employees;</code></pre>
   </div>
 
   <!-- ==============================================================================
+       MODAL 3: ADD / EDIT STUDENT
+       ============================================================================== -->
+  <div id="student-modal" class="hidden fixed inset-0 z-50 bg-black/75 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
+    <div class="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-md my-auto overflow-hidden shadow-2xl animate-in fade-in duration-200">
+      <div class="flex items-center justify-between p-4 sm:p-5 border-b border-slate-800">
+        <h3 id="student-modal-title" class="font-bold text-sm sm:text-base text-white">Enroll New Student</h3>
+        <button onclick="StudentModule.closeStudentModal()" class="text-slate-400 hover:text-white p-2 rounded-lg" aria-label="Close modal">
+          <i class="fa-solid fa-xmark text-lg"></i>
+        </button>
+      </div>
+
+      <form id="student-form" class="p-4 sm:p-6 space-y-4">
+        <input type="hidden" id="student-form-id">
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-bold uppercase text-slate-400 mb-1">First Name *</label>
+            <input type="text" id="student-form-firstname" required placeholder="Alex" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-sm text-white focus:border-indigo-500 focus:outline-none">
+          </div>
+          <div>
+            <label class="block text-xs font-bold uppercase text-slate-400 mb-1">Last Name *</label>
+            <input type="text" id="student-form-lastname" required placeholder="Smith" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-sm text-white focus:border-indigo-500 focus:outline-none">
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-bold uppercase text-slate-400 mb-1">Roll / Student ID *</label>
+            <input type="text" id="student-form-roll" required placeholder="ST-101" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-sm text-white font-mono focus:border-indigo-500 focus:outline-none">
+          </div>
+          <div>
+            <div class="flex items-center justify-between mb-1">
+              <label class="block text-xs font-bold uppercase text-slate-400">Class *</label>
+              <button type="button" onclick="StudentModule.openAddClassModal()" class="text-xs text-indigo-400 hover:text-indigo-300 font-semibold flex items-center gap-1">+ Class</button>
+            </div>
+            <select id="student-form-class" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-sm text-white focus:border-indigo-500 focus:outline-none"></select>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-bold uppercase text-slate-400 mb-1">Guardian Phone</label>
+            <input type="text" id="student-form-guardian" placeholder="+1 (555) 123-4567" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-sm text-white focus:border-indigo-500 focus:outline-none">
+          </div>
+          <div>
+            <label class="block text-xs font-bold uppercase text-slate-400 mb-1">Status</label>
+            <select id="student-form-status" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-sm text-white focus:border-indigo-500 focus:outline-none">
+              <option value="active">Active</option>
+              <option value="inactive">Inactive</option>
+            </select>
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold uppercase text-slate-400 mb-1">Student / Parent Email (Optional)</label>
+          <input type="email" id="student-form-email" placeholder="student@school.edu" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-sm text-white focus:border-indigo-500 focus:outline-none">
+        </div>
+
+        <div class="flex items-center justify-end gap-3 pt-4 border-t border-slate-800">
+          <button type="button" onclick="StudentModule.closeStudentModal()" class="px-4 py-2.5 rounded-xl text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-300 transition active:scale-95">Cancel</button>
+          <button type="submit" class="px-5 py-2.5 rounded-xl text-xs font-semibold bg-indigo-600 hover:bg-indigo-500 text-white shadow-lg shadow-indigo-600/25 transition active:scale-95">Save Student</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ==============================================================================
+       MODAL 4: ADD CLASS / GRADE
+       ============================================================================== -->
+  <div id="class-modal" class="hidden fixed inset-0 z-50 bg-black/75 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
+    <div class="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-md my-auto overflow-hidden shadow-2xl animate-in fade-in duration-200">
+      <div class="flex items-center justify-between p-4 sm:p-5 border-b border-slate-800">
+        <h3 class="font-bold text-sm sm:text-base text-white">Create New Classroom / Grade</h3>
+        <button onclick="StudentModule.closeClassModal()" class="text-slate-400 hover:text-white p-2 rounded-lg" aria-label="Close modal">
+          <i class="fa-solid fa-xmark text-lg"></i>
+        </button>
+      </div>
+
+      <form id="class-form" class="p-4 sm:p-6 space-y-4">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-bold uppercase text-slate-400 mb-1">Class / Grade Name *</label>
+            <input type="text" id="class-form-name" required placeholder="Grade 10 or Physics 101" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-sm text-white focus:border-indigo-500 focus:outline-none">
+          </div>
+          <div>
+            <label class="block text-xs font-bold uppercase text-slate-400 mb-1">Section</label>
+            <input type="text" id="class-form-section" placeholder="Section A" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-sm text-white focus:border-indigo-500 focus:outline-none">
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-bold uppercase text-slate-400 mb-1">Teacher In-Charge</label>
+            <input type="text" id="class-form-teacher" placeholder="Mr. Anderson" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-sm text-white focus:border-indigo-500 focus:outline-none">
+          </div>
+          <div>
+            <label class="block text-xs font-bold uppercase text-slate-400 mb-1">Room / Hall Number</label>
+            <input type="text" id="class-form-room" placeholder="Room 204" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-sm text-white focus:border-indigo-500 focus:outline-none">
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold uppercase text-slate-400 mb-1">Description / Notes</label>
+          <input type="text" id="class-form-desc" placeholder="Morning batch, Room 204..." class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-sm text-white focus:border-indigo-500 focus:outline-none">
+        </div>
+
+        <div class="flex items-center justify-end gap-3 pt-4 border-t border-slate-800">
+          <button type="button" onclick="StudentModule.closeClassModal()" class="px-4 py-2.5 rounded-xl text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-300 transition active:scale-95">Cancel</button>
+          <button type="submit" class="px-5 py-2.5 rounded-xl text-xs font-semibold bg-indigo-600 hover:bg-indigo-500 text-white shadow-lg shadow-indigo-600/25 transition active:scale-95">Save Class</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ==============================================================================
        EXTERNAL DEPENDENCY SCRIPTS (CDN)
        ============================================================================== -->
   <!-- Supabase JS Client v2 -->
@@ -1188,6 +1618,7 @@ ALTER PUBLICATION supabase_realtime ADD TABLE employees;</code></pre>
   <script src="js/db.js"></script>
   <script src="js/attendance.js"></script>
   <script src="js/employees.js"></script>
+  <script src="js/students.js"></script>
   <script src="js/leaves.js"></script>
   <script src="js/analytics.js"></script>
   <script src="js/reports.js"></script>

@@ -1,12 +1,12 @@
 /**
  * Supabase Database Service Layer
  * All operations communicate directly and exclusively with Supabase Cloud Database.
- * Location functionality excluded.
+ * Supports Institutional Staff/Teachers, Classroom Student Attendance, Departments, and Shifts.
  */
 
 const DB = {
-  init() {
-    CONFIG.init();
+  async init() {
+    await CONFIG.init();
   },
 
   checkClient() {
@@ -104,7 +104,7 @@ const DB = {
   },
 
   // ==========================================
-  // EMPLOYEES
+  // EMPLOYEES / TEACHERS / STAFF
   // ==========================================
   async getEmployees() {
     if (!CONFIG.client) return [];
@@ -207,7 +207,7 @@ const DB = {
   },
 
   // ==========================================
-  // ATTENDANCE (No Location)
+  // STAFF ATTENDANCE (No Location)
   // ==========================================
   async getAttendance(filters = {}) {
     if (!CONFIG.client) return [];
@@ -276,7 +276,6 @@ const DB = {
     const today = new Date().toISOString().split("T")[0];
     const now = new Date();
 
-    // Check organization settings for grace period and start time
     const settings = await this.getSettings();
     let graceMinutes = settings?.grace_period_minutes ?? 15;
     let workStartHour = 9;
@@ -368,6 +367,217 @@ const DB = {
 
     if (error) throw new Error(error.message);
     return data && data[0] ? data[0] : null;
+  },
+
+  // ==========================================
+  // CLASSES / CLASSROOMS (FOR TEACHERS)
+  // ==========================================
+  async getClasses() {
+    if (!CONFIG.client) return [];
+    try {
+      const { data, error } = await CONFIG.client
+        .from("classes")
+        .select("*")
+        .order("name", { ascending: true });
+
+      if (error) {
+        console.error("Supabase getClasses error:", error.message);
+        return [];
+      }
+      return data || [];
+    } catch (e) {
+      console.error("Failed to fetch classes:", e);
+      return [];
+    }
+  },
+
+  async addClass(classData) {
+    this.checkClient();
+    const supaData = { ...classData };
+    delete supaData.id;
+
+    const { data, error } = await CONFIG.client
+      .from("classes")
+      .insert([supaData])
+      .select();
+
+    if (error) throw new Error(error.message);
+    return data && data[0] ? data[0] : null;
+  },
+
+  async updateClass(id, updates) {
+    this.checkClient();
+    const supaData = { ...updates };
+    delete supaData.id;
+
+    const { data, error } = await CONFIG.client
+      .from("classes")
+      .update(supaData)
+      .eq("id", id)
+      .select();
+
+    if (error) throw new Error(error.message);
+    return data && data[0] ? data[0] : null;
+  },
+
+  async deleteClass(id) {
+    this.checkClient();
+    const { error } = await CONFIG.client
+      .from("classes")
+      .delete()
+      .eq("id", id);
+
+    if (error) throw new Error(error.message);
+    return true;
+  },
+
+  // ==========================================
+  // STUDENTS DIRECTORY
+  // ==========================================
+  async getStudents(classId = null) {
+    if (!CONFIG.client) return [];
+    try {
+      let query = CONFIG.client
+        .from("students")
+        .select("*, classes(name, section, room_number, teacher_name)")
+        .order("roll_number", { ascending: true });
+
+      if (classId && classId !== "all") {
+        query = query.eq("class_id", classId);
+      }
+
+      const { data, error } = await query;
+      if (error) {
+        console.error("Supabase getStudents error:", error.message);
+        return [];
+      }
+
+      return (data || []).map(std => ({
+        ...std,
+        class_name: std.classes ? `${std.classes.name}${std.classes.section ? " - " + std.classes.section : ""}` : "Unassigned",
+        class_teacher: std.classes?.teacher_name || "Unassigned"
+      }));
+    } catch (e) {
+      console.error("Failed to fetch students:", e);
+      return [];
+    }
+  },
+
+  async addStudent(studentData) {
+    this.checkClient();
+    const supaData = { ...studentData };
+    delete supaData.id;
+    if (!supaData.class_id) delete supaData.class_id;
+
+    const { data, error } = await CONFIG.client
+      .from("students")
+      .insert([supaData])
+      .select("*, classes(name, section)");
+
+    if (error) throw new Error(error.message);
+    return data && data[0] ? data[0] : null;
+  },
+
+  async updateStudent(id, updates) {
+    this.checkClient();
+    const supaData = { ...updates };
+    delete supaData.id;
+    if (!supaData.class_id) supaData.class_id = null;
+
+    const { data, error } = await CONFIG.client
+      .from("students")
+      .update(supaData)
+      .eq("id", id)
+      .select("*, classes(name, section)");
+
+    if (error) throw new Error(error.message);
+    return data && data[0] ? data[0] : null;
+  },
+
+  async deleteStudent(id) {
+    this.checkClient();
+    const { error } = await CONFIG.client
+      .from("students")
+      .delete()
+      .eq("id", id);
+
+    if (error) throw new Error(error.message);
+    return true;
+  },
+
+  // ==========================================
+  // STUDENT ATTENDANCE (TEACHER ROLL-CALL)
+  // ==========================================
+  async getStudentAttendance(classId, date) {
+    if (!CONFIG.client) return [];
+    try {
+      let query = CONFIG.client
+        .from("student_attendance")
+        .select("*, students(*)")
+        .eq("date", date);
+
+      if (classId) {
+        query = query.eq("class_id", classId);
+      }
+
+      const { data, error } = await query;
+      if (error) {
+        console.error("Supabase getStudentAttendance error:", error.message);
+        return [];
+      }
+      return data || [];
+    } catch (e) {
+      console.error("Failed to fetch student attendance:", e);
+      return [];
+    }
+  },
+
+  /**
+   * Save / Upsert Classroom Attendance Records in Batch
+   */
+  async saveClassAttendance(attendanceList) {
+    this.checkClient();
+    if (!attendanceList || attendanceList.length === 0) {
+      return { success: true, count: 0 };
+    }
+
+    const { data, error } = await CONFIG.client
+      .from("student_attendance")
+      .upsert(attendanceList, { onConflict: "student_id,class_id,date" })
+      .select();
+
+    if (error) throw new Error(error.message);
+    return { success: true, count: data ? data.length : attendanceList.length };
+  },
+
+  async getStudentAttendanceReport(filters = {}) {
+    if (!CONFIG.client) return [];
+    try {
+      let query = CONFIG.client
+        .from("student_attendance")
+        .select("*, students(*), classes(*)")
+        .order("date", { ascending: false });
+
+      if (filters.classId && filters.classId !== "all") {
+        query = query.eq("class_id", filters.classId);
+      }
+      if (filters.startDate) {
+        query = query.gte("date", filters.startDate);
+      }
+      if (filters.endDate) {
+        query = query.lte("date", filters.endDate);
+      }
+
+      const { data, error } = await query;
+      if (error) {
+        console.error("Supabase getStudentAttendanceReport error:", error.message);
+        return [];
+      }
+      return data || [];
+    } catch (e) {
+      console.error("Failed to fetch student attendance report:", e);
+      return [];
+    }
   },
 
   // ==========================================
@@ -527,4 +737,3 @@ const DB = {
 };
 
 window.DB = DB;
-DB.init();
