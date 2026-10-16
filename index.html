@@ -73,60 +73,60 @@
 
       <!-- Navigation Links -->
       <nav class="p-4 space-y-1.5" id="sidebar-nav">
-        <a href="#dashboard" data-view="dashboard"
+        <a id="nav-item-dashboard" href="#dashboard" data-view="dashboard"
            class="nav-link flex items-center gap-3 px-3.5 py-3 md:py-2.5 rounded-xl text-sm font-semibold transition-all bg-indigo-600 text-white shadow-lg shadow-indigo-500/20 active:scale-98">
           <i class="fa-solid fa-chart-pie w-5 text-center text-base"></i>
           <span>Dashboard</span>
         </a>
 
-        <a href="#kiosk" data-view="kiosk"
+        <a id="nav-item-kiosk" href="#kiosk" data-view="kiosk"
            class="nav-link flex items-center gap-3 px-3.5 py-3 md:py-2.5 rounded-xl text-sm font-semibold transition-all text-slate-400 hover:bg-slate-800/70 hover:text-slate-200 active:scale-98">
           <i class="fa-solid fa-stopwatch w-5 text-center text-base"></i>
           <span>Clock In / Out Kiosk</span>
         </a>
 
-        <a href="#attendance" data-view="attendance"
+        <a id="nav-item-attendance" href="#attendance" data-view="attendance"
            class="nav-link flex items-center gap-3 px-3.5 py-3 md:py-2.5 rounded-xl text-sm font-semibold transition-all text-slate-400 hover:bg-slate-800/70 hover:text-slate-200 active:scale-98">
           <i class="fa-solid fa-clipboard-user w-5 text-center text-base"></i>
           <span>Daily Attendance</span>
         </a>
 
-        <a href="#employees" data-view="employees"
+        <a id="nav-item-employees" href="#employees" data-view="employees"
            class="nav-link flex items-center gap-3 px-3.5 py-3 md:py-2.5 rounded-xl text-sm font-semibold transition-all text-slate-400 hover:bg-slate-800/70 hover:text-slate-200 active:scale-98">
           <i class="fa-solid fa-user-group w-5 text-center text-base"></i>
           <span>Employees</span>
         </a>
 
-        <a href="#leaves" data-view="leaves"
+        <a id="nav-item-leaves" href="#leaves" data-view="leaves"
            class="nav-link flex items-center gap-3 px-3.5 py-3 md:py-2.5 rounded-xl text-sm font-semibold transition-all text-slate-400 hover:bg-slate-800/70 hover:text-slate-200 active:scale-98">
           <i class="fa-solid fa-calendar-minus w-5 text-center text-base"></i>
           <span>Leave Management</span>
         </a>
 
-        <a href="#reports" data-view="reports"
+        <a id="nav-item-reports" href="#reports" data-view="reports"
            class="nav-link flex items-center gap-3 px-3.5 py-3 md:py-2.5 rounded-xl text-sm font-semibold transition-all text-slate-400 hover:bg-slate-800/70 hover:text-slate-200 active:scale-98">
           <i class="fa-solid fa-file-excel w-5 text-center text-base"></i>
           <span>Timesheet & Export</span>
         </a>
 
         <!-- Academic & Teacher Section -->
-        <div class="pt-2 pb-1 px-3">
+        <div id="nav-section-academic" class="pt-2 pb-1 px-3">
           <span class="text-[10px] font-bold uppercase tracking-wider text-slate-500">Teacher & Students</span>
         </div>
 
-        <a href="#classroom" data-view="classroom"
+        <a id="nav-item-classroom" href="#classroom" data-view="classroom"
            class="nav-link flex items-center gap-3 px-3.5 py-3 md:py-2.5 rounded-xl text-sm font-semibold transition-all text-slate-400 hover:bg-slate-800/70 hover:text-slate-200 active:scale-98">
           <i class="fa-solid fa-chalkboard-user w-5 text-center text-base text-emerald-400"></i>
           <span>Classroom Roll Call</span>
         </a>
 
-        <a href="#students" data-view="students"
+        <a id="nav-item-students" href="#students" data-view="students"
            class="nav-link flex items-center gap-3 px-3.5 py-3 md:py-2.5 rounded-xl text-sm font-semibold transition-all text-slate-400 hover:bg-slate-800/70 hover:text-slate-200 active:scale-98">
           <i class="fa-solid fa-graduation-cap w-5 text-center text-base text-indigo-400"></i>
           <span>Students & Classes</span>
         </a>
 
-        <a href="#settings" data-view="settings"
+        <a id="nav-item-settings" href="#settings" data-view="settings"
            class="nav-link flex items-center gap-3 px-3.5 py-3 md:py-2.5 rounded-xl text-sm font-semibold transition-all text-slate-400 hover:bg-slate-800/70 hover:text-slate-200 active:scale-98">
           <i class="fa-solid fa-database w-5 text-center text-base"></i>
           <span>Database & Config</span>
@@ -166,7 +166,7 @@
         <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider hidden sm:inline-block">Attendance Dashboard</span>
       </div>
 
-      <!-- Header Right: Connection status badge & quick action -->
+      <!-- Header Right: Connection status badge, Tour & Guide & quick action -->
       <div class="flex items-center gap-2 sm:gap-3">
         <!-- Live Connection Mode Badge -->
         <div id="header-connection-badge" class="px-2.5 sm:px-3 py-1.5 rounded-full text-[11px] sm:text-xs font-semibold bg-amber-500/10 text-amber-400 border border-amber-500/20 flex items-center gap-1.5 sm:gap-2 cursor-pointer hover:bg-amber-500/20 transition">
@@ -174,11 +174,19 @@
           <span class="truncate max-w-[130px] sm:max-w-none">Connecting...</span>
         </div>
 
-        <!-- Quick Launch Kiosk Button -->
-        <button onclick="App.switchView('kiosk')"
+        <!-- Tour & Guide Button -->
+        <button id="btn-open-tour" type="button"
+                class="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 hover:border-indigo-500/50 transition active:scale-95"
+                title="Open Setup Guide & Purpose Selector">
+          <i class="fa-solid fa-compass text-indigo-400"></i>
+          <span>Welcome & Guide</span>
+        </button>
+
+        <!-- Quick Launch Action Button -->
+        <button id="header-quick-action-btn" onclick="App.triggerQuickAction()"
                 class="flex items-center gap-1.5 sm:gap-2 px-3 py-1.5 rounded-lg text-xs font-semibold bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white shadow-md shadow-indigo-500/20 active:scale-95 transition">
-          <i class="fa-solid fa-stopwatch"></i>
-          <span class="hidden xs:inline">Clock In / Out</span>
+          <i id="header-quick-action-icon" class="fa-solid fa-stopwatch"></i>
+          <span id="header-quick-action-text" class="hidden xs:inline">Clock In / Out</span>
         </button>
       </div>
     </header>
@@ -194,11 +202,11 @@
           </div>
           <div>
             <h4 class="font-bold text-sm text-amber-300">Supabase Connection Required</h4>
-            <p class="text-xs text-amber-200/80 mt-0.5">Please provide your Supabase Project URL and Anon Key in Database Configuration.</p>
+            <p class="text-xs text-amber-200/80 mt-0.5">Please connect your Supabase database using the setup wizard or enter credentials.</p>
           </div>
         </div>
-        <button onclick="App.switchView('settings')" class="w-full sm:w-auto px-4 py-2 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs rounded-xl shadow-md transition flex-shrink-0 text-center">
-          Configure Database
+        <button onclick="OnboardingModule.open(1)" class="w-full sm:w-auto px-4 py-2 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs rounded-xl shadow-md transition flex-shrink-0 text-center">
+          Open Setup Wizard
         </button>
       </div>
 
@@ -213,12 +221,12 @@
             <p class="text-xs sm:text-sm text-slate-400 mt-1">Live workforce attendance and punctuality metrics</p>
           </div>
           <div class="flex items-center gap-2">
-            <button onclick="App.switchView('attendance')"
-                    class="flex-1 sm:flex-none justify-center px-3.5 py-2 text-xs font-semibold rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 transition flex items-center gap-2">
+            <button id="dashboard-header-btn-1" onclick="App.triggerDashboardAction1()"
+                    class="flex-1 sm:flex-none justify-center px-3.5 py-2 text-xs font-semibold rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 transition flex items-center gap-2 active:scale-95">
               <i class="fa-solid fa-list-check"></i> <span>Daily Logs</span>
             </button>
-            <button onclick="App.switchView('kiosk')"
-                    class="flex-1 sm:flex-none justify-center px-3.5 py-2 text-xs font-semibold rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white shadow-lg shadow-indigo-600/25 transition flex items-center gap-2">
+            <button id="dashboard-header-btn-2" onclick="App.triggerDashboardAction2()"
+                    class="flex-1 sm:flex-none justify-center px-3.5 py-2 text-xs font-semibold rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white shadow-lg shadow-indigo-600/25 transition flex items-center gap-2 active:scale-95">
               <i class="fa-solid fa-qrcode"></i> <span>Kiosk</span>
             </button>
           </div>
@@ -1080,6 +1088,46 @@
               </button>
             </div>
 
+            <!-- System Purpose & Tailored Schema Selector -->
+            <div class="glass-panel rounded-2xl p-5 sm:p-6 border border-slate-800 space-y-4">
+              <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-800">
+                <div>
+                  <h3 class="font-bold text-sm sm:text-base text-white flex items-center gap-2">
+                    <i class="fa-solid fa-sliders text-indigo-400"></i> System Purpose & Workspace Mode
+                  </h3>
+                  <p class="text-xs text-slate-400 mt-0.5">Customize your active modules and update the matching SQL schema</p>
+                </div>
+                <button type="button" onclick="OnboardingModule.open(1)"
+                        class="px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 hover:border-indigo-500/50 transition flex items-center gap-1.5 active:scale-95 self-start sm:self-auto">
+                  <i class="fa-solid fa-compass text-indigo-400"></i> <span>Open Setup Wizard</span>
+                </button>
+              </div>
+
+              <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <label id="purpose-option-both" class="p-3.5 rounded-xl border border-slate-800 bg-slate-950/60 hover:border-indigo-500/50 cursor-pointer transition flex items-start gap-3">
+                  <input type="radio" name="settings-system-purpose" value="both" class="mt-1 text-indigo-600 focus:ring-0">
+                  <div>
+                    <strong class="text-xs font-bold text-white block">Staff & Students</strong>
+                    <span class="text-[11px] text-slate-400 block mt-0.5">Full academic & enterprise suite</span>
+                  </div>
+                </label>
+                <label id="purpose-option-staff" class="p-3.5 rounded-xl border border-slate-800 bg-slate-950/60 hover:border-indigo-500/50 cursor-pointer transition flex items-start gap-3">
+                  <input type="radio" name="settings-system-purpose" value="staff" class="mt-1 text-indigo-600 focus:ring-0">
+                  <div>
+                    <strong class="text-xs font-bold text-white block">Only Staff</strong>
+                    <span class="text-[11px] text-slate-400 block mt-0.5">Corporate kiosk & employee leaves</span>
+                  </div>
+                </label>
+                <label id="purpose-option-students" class="p-3.5 rounded-xl border border-slate-800 bg-slate-950/60 hover:border-indigo-500/50 cursor-pointer transition flex items-start gap-3">
+                  <input type="radio" name="settings-system-purpose" value="students" class="mt-1 text-indigo-600 focus:ring-0">
+                  <div>
+                    <strong class="text-xs font-bold text-white block">Only Students</strong>
+                    <span class="text-[11px] text-slate-400 block mt-0.5">Teacher roll-call & class rosters</span>
+                  </div>
+                </label>
+              </div>
+            </div>
+
             <!-- SQL Schema Display Card (Copy & Paste for SQL Editor) -->
             <div class="glass-panel rounded-2xl p-5 sm:p-6 border border-slate-800 space-y-3">
               <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-2 border-b border-slate-800">
@@ -1594,6 +1642,451 @@ ALTER PUBLICATION supabase_realtime ADD TABLE students;</code></pre>
   </div>
 
   <!-- ==============================================================================
+       ONBOARDING & WELCOME WIZARD (MULTI-STEP SETUP & FAST LOGIN)
+       ============================================================================== -->
+  <div id="onboarding-wizard-modal" class="hidden fixed inset-0 z-50 bg-[#070b14]/95 backdrop-blur-2xl flex flex-col justify-between overflow-y-auto min-h-screen text-slate-100 animate-in fade-in duration-200">
+    <!-- Top Header -->
+    <div class="border-b border-slate-800/80 bg-slate-900/80 backdrop-blur-md px-4 sm:px-8 py-3.5 flex items-center justify-between sticky top-0 z-20">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-600 to-violet-500 flex items-center justify-center text-white shadow-lg shadow-indigo-500/25 flex-shrink-0">
+          <i class="fa-solid fa-fingerprint text-xl"></i>
+        </div>
+        <div>
+          <h2 class="font-extrabold text-sm sm:text-base text-white tracking-tight flex items-center gap-2">
+            <span>Apex Attendance</span>
+            <span class="px-2 py-0.5 rounded-full text-[10px] font-mono bg-indigo-500/20 text-indigo-300 font-semibold uppercase tracking-wider">v2.0</span>
+          </h2>
+          <p class="text-[11px] text-slate-400">Enterprise & Academic Attendance Management</p>
+        </div>
+      </div>
+
+      <!-- Stepper Indicator -->
+      <div class="hidden md:flex items-center gap-3">
+        <div id="step-indicator-1" class="step-item active flex items-center gap-1.5 text-xs font-bold text-indigo-400">
+          <span class="step-num w-6 h-6 rounded-full bg-indigo-600 text-white flex items-center justify-center text-xs shadow-md shadow-indigo-600/30">1</span>
+          <span>Welcome</span>
+        </div>
+        <span class="text-slate-700 text-xs"><i class="fa-solid fa-chevron-right text-[10px]"></i></span>
+        <div id="step-indicator-2" class="step-item flex items-center gap-1.5 text-xs font-semibold text-slate-500">
+          <span class="step-num w-6 h-6 rounded-full bg-slate-800 text-slate-400 flex items-center justify-center text-xs">2</span>
+          <span>Purpose</span>
+        </div>
+        <span class="text-slate-700 text-xs"><i class="fa-solid fa-chevron-right text-[10px]"></i></span>
+        <div id="step-indicator-3" class="step-item flex items-center gap-1.5 text-xs font-semibold text-slate-500">
+          <span class="step-num w-6 h-6 rounded-full bg-slate-800 text-slate-400 flex items-center justify-center text-xs">3</span>
+          <span>Supabase Guide</span>
+        </div>
+        <span class="text-slate-700 text-xs"><i class="fa-solid fa-chevron-right text-[10px]"></i></span>
+        <div id="step-indicator-4" class="step-item flex items-center gap-1.5 text-xs font-semibold text-slate-500">
+          <span class="step-num w-6 h-6 rounded-full bg-slate-800 text-slate-400 flex items-center justify-center text-xs">4</span>
+          <span>Connect & Launch</span>
+        </div>
+      </div>
+
+      <!-- Close Button (Available if user is reviewing tour while already configured) -->
+      <button id="btn-close-wizard" type="button" class="hidden text-slate-400 hover:text-white p-2 rounded-xl hover:bg-slate-800 transition" title="Close Setup Guide">
+        <i class="fa-solid fa-xmark text-lg"></i>
+      </button>
+    </div>
+
+    <!-- Main Scrollable Content Container -->
+    <div id="onboarding-wizard-container" class="max-w-5xl mx-auto w-full p-4 sm:p-6 md:p-8 flex-1 flex flex-col justify-center">
+
+      <!-- ==========================================
+           STEP 1: WELCOME & FEATURE BRIEFING
+           ========================================== -->
+      <div id="wizard-step-1" class="space-y-6 animate-in fade-in duration-300">
+        <!-- Hero Header -->
+        <div class="text-center max-w-2xl mx-auto space-y-3">
+          <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 text-xs font-bold uppercase tracking-wider">
+            <span class="w-2 h-2 rounded-full bg-indigo-400 animate-pulse"></span>
+            Welcome to Apex Attendance
+          </div>
+          <h1 class="text-2xl sm:text-4xl font-extrabold text-white tracking-tight leading-tight">
+            Next-Gen Attendance Management <br class="hidden sm:inline" />
+            <span class="bg-gradient-to-r from-indigo-400 via-violet-400 to-emerald-400 bg-clip-text text-transparent">Directly on Supabase Cloud</span>
+          </h1>
+          <p class="text-xs sm:text-sm text-slate-400 leading-relaxed max-w-xl mx-auto">
+            A privacy-first, biometric-enabled attendance platform with zero mock data. Designed for corporate staff, educational institutions, and teachers.
+          </p>
+        </div>
+
+        <!-- 6 Feature Cards Grid -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5 pt-2">
+          <!-- Feature 1 -->
+          <div class="glass-panel p-4 sm:p-5 rounded-2xl border border-slate-800 bg-slate-900/40 hover:border-indigo-500/30 transition space-y-2">
+            <div class="w-10 h-10 rounded-xl bg-indigo-500/10 text-indigo-400 flex items-center justify-center text-lg">
+              <i class="fa-solid fa-camera"></i>
+            </div>
+            <h3 class="font-bold text-sm text-white">Biometric Facial Verification</h3>
+            <p class="text-xs text-slate-400 leading-relaxed">
+              Instant web-camera photo capture during clock-in eliminates buddy-punching and guarantees attendance authenticity.
+            </p>
+          </div>
+
+          <!-- Feature 2 -->
+          <div class="glass-panel p-4 sm:p-5 rounded-2xl border border-slate-800 bg-slate-900/40 hover:border-emerald-500/30 transition space-y-2">
+            <div class="w-10 h-10 rounded-xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center text-lg">
+              <i class="fa-solid fa-shield-halved"></i>
+            </div>
+            <h3 class="font-bold text-sm text-white">Privacy-First (No Location)</h3>
+            <p class="text-xs text-slate-400 leading-relaxed">
+              Zero GPS tracking. Staff and students are never tracked or geo-located, respecting personal privacy and institutional trust.
+            </p>
+          </div>
+
+          <!-- Feature 3 -->
+          <div class="glass-panel p-4 sm:p-5 rounded-2xl border border-slate-800 bg-slate-900/40 hover:border-amber-500/30 transition space-y-2">
+            <div class="w-10 h-10 rounded-xl bg-amber-500/10 text-amber-400 flex items-center justify-center text-lg">
+              <i class="fa-solid fa-stopwatch"></i>
+            </div>
+            <h3 class="font-bold text-sm text-white">Automated Shift & Grace Rules</h3>
+            <p class="text-xs text-slate-400 leading-relaxed">
+              Configurable office hours and late grace periods calculate work hours, half-days, and punctuality logs in real-time.
+            </p>
+          </div>
+
+          <!-- Feature 4 -->
+          <div class="glass-panel p-4 sm:p-5 rounded-2xl border border-slate-800 bg-slate-900/40 hover:border-sky-500/30 transition space-y-2">
+            <div class="w-10 h-10 rounded-xl bg-sky-500/10 text-sky-400 flex items-center justify-center text-lg">
+              <i class="fa-solid fa-chalkboard-user"></i>
+            </div>
+            <h3 class="font-bold text-sm text-white">Classroom Student Roll-Call</h3>
+            <p class="text-xs text-slate-400 leading-relaxed">
+              Specialized teacher workspace for 1-click batch student roll-calls (Present, Absent, Late, Excused), classes, and rosters.
+            </p>
+          </div>
+
+          <!-- Feature 5 -->
+          <div class="glass-panel p-4 sm:p-5 rounded-2xl border border-slate-800 bg-slate-900/40 hover:border-purple-500/30 transition space-y-2">
+            <div class="w-10 h-10 rounded-xl bg-purple-500/10 text-purple-400 flex items-center justify-center text-lg">
+              <i class="fa-solid fa-file-excel"></i>
+            </div>
+            <h3 class="font-bold text-sm text-white">Live Analytics & Excel Exports</h3>
+            <p class="text-xs text-slate-400 leading-relaxed">
+              Real-time attendance trend graphs, monthly matrix timesheets, and 1-click SheetJS .xlsx / CSV downloads.
+            </p>
+          </div>
+
+          <!-- Feature 6 -->
+          <div class="glass-panel p-4 sm:p-5 rounded-2xl border border-slate-800 bg-slate-900/40 hover:border-rose-500/30 transition space-y-2">
+            <div class="w-10 h-10 rounded-xl bg-rose-500/10 text-rose-400 flex items-center justify-center text-lg">
+              <i class="fa-solid fa-lock"></i>
+            </div>
+            <h3 class="font-bold text-sm text-white">Bank-Grade Credential Security</h3>
+            <p class="text-xs text-slate-400 leading-relaxed">
+              Client-side Web Crypto AES-GCM encryption with proactive blocking of dangerous service_role keys to protect your database.
+            </p>
+          </div>
+        </div>
+
+        <!-- Welcome Action Buttons -->
+        <div class="pt-4 flex flex-col sm:flex-row items-center justify-between gap-3 border-t border-slate-800/80">
+          <button id="btn-welcome-login" type="button"
+                  class="w-full sm:w-auto px-5 py-3 rounded-xl text-xs sm:text-sm font-semibold bg-slate-800/90 hover:bg-slate-700 text-slate-200 border border-slate-700 hover:border-indigo-500/50 transition flex items-center justify-center gap-2 active:scale-95 shadow-md">
+            <i class="fa-solid fa-key text-indigo-400"></i>
+            <span>Already have a project? Quick Log In</span>
+          </button>
+
+          <button id="btn-welcome-next" type="button"
+                  class="w-full sm:w-auto px-7 py-3 rounded-xl text-xs sm:text-sm font-bold bg-gradient-to-r from-indigo-600 via-indigo-500 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white shadow-xl shadow-indigo-600/30 transition flex items-center justify-center gap-2 active:scale-95">
+            <span>Get Started (Setup Guide)</span>
+            <i class="fa-solid fa-arrow-right"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- ==========================================
+           STEP 2: PURPOSE OF USE SELECTION
+           ========================================== -->
+      <div id="wizard-step-2" class="hidden space-y-6 animate-in fade-in duration-300">
+        <div class="text-center max-w-xl mx-auto space-y-2">
+          <span class="text-xs font-mono uppercase tracking-widest text-indigo-400 font-semibold">Step 2 of 4</span>
+          <h2 class="text-xl sm:text-3xl font-extrabold text-white tracking-tight">
+            For which purpose are you using this system?
+          </h2>
+          <p class="text-xs sm:text-sm text-slate-400 leading-relaxed">
+            Choose your organization's primary attendance workflow. We will tailor the database schema, features, and navigation specifically for you.
+          </p>
+        </div>
+
+        <!-- 3 Purpose Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2">
+          <!-- Option A: Staff and Students -->
+          <div data-purpose="both"
+               class="purpose-card-option p-5 rounded-2xl border-2 border-indigo-500 bg-indigo-500/10 shadow-lg shadow-indigo-500/10 cursor-pointer transition flex flex-col justify-between gap-4">
+            <div class="space-y-3">
+              <div class="flex items-center justify-between">
+                <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
+                  Recommended for Academics
+                </span>
+                <div class="purpose-radio-check w-5 h-5 rounded-full bg-indigo-600 border border-indigo-400 flex items-center justify-center text-white text-[10px]">
+                  <i class="fa-solid fa-check"></i>
+                </div>
+              </div>
+              <div class="w-12 h-12 rounded-xl bg-gradient-to-tr from-indigo-600 to-violet-500 text-white flex items-center justify-center text-xl shadow-md shadow-indigo-600/30">
+                <i class="fa-solid fa-school"></i>
+              </div>
+              <h3 class="font-bold text-base text-white">Staff & Students Attendance</h3>
+              <p class="text-xs text-slate-300 leading-relaxed">
+                Full academic suite for universities, schools, colleges, and training academies. Faculty clock-in kiosk and teacher student roll-call.
+              </p>
+            </div>
+            <div class="pt-3 border-t border-indigo-500/20 text-[11px] text-indigo-200/80 space-y-1">
+              <div class="font-semibold text-white">Includes Everything:</div>
+              <p class="text-[11px] text-slate-400">Staff Kiosk • Classroom Roll-Call • Employees • Classes • Students • Leaves • Reports</p>
+            </div>
+          </div>
+
+          <!-- Option B: Only Staff -->
+          <div data-purpose="staff"
+               class="purpose-card-option p-5 rounded-2xl border-2 border-slate-800 bg-slate-900/50 hover:border-slate-700 cursor-pointer transition flex flex-col justify-between gap-4">
+            <div class="space-y-3">
+              <div class="flex items-center justify-between">
+                <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                  Corporate & Enterprise
+                </span>
+                <div class="purpose-radio-check w-5 h-5 rounded-full border border-slate-700 bg-slate-950 flex items-center justify-center text-transparent text-[10px]"></div>
+              </div>
+              <div class="w-12 h-12 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 flex items-center justify-center text-xl">
+                <i class="fa-solid fa-building-user"></i>
+              </div>
+              <h3 class="font-bold text-base text-white">Only Staff Attendance</h3>
+              <p class="text-xs text-slate-400 leading-relaxed">
+                Optimized for companies, corporate offices, businesses, and agencies. Focuses strictly on employee punctuality, work shifts, and leave approvals.
+              </p>
+            </div>
+            <div class="pt-3 border-t border-slate-800 text-[11px] text-slate-400 space-y-1">
+              <div class="font-semibold text-slate-300">Corporate Focus:</div>
+              <p class="text-[11px] text-slate-500">Employee Kiosk • Shift Scheduling • Departments • Leaves Pipeline • Monthly Timesheets</p>
+            </div>
+          </div>
+
+          <!-- Option C: Only Students -->
+          <div data-purpose="students"
+               class="purpose-card-option p-5 rounded-2xl border-2 border-slate-800 bg-slate-900/50 hover:border-slate-700 cursor-pointer transition flex flex-col justify-between gap-4">
+            <div class="space-y-3">
+              <div class="flex items-center justify-between">
+                <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-amber-500/10 text-amber-400 border border-amber-500/20">
+                  Teachers & Classrooms
+                </span>
+                <div class="purpose-radio-check w-5 h-5 rounded-full border border-slate-700 bg-slate-950 flex items-center justify-center text-transparent text-[10px]"></div>
+              </div>
+              <div class="w-12 h-12 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-400 flex items-center justify-center text-xl">
+                <i class="fa-solid fa-graduation-cap"></i>
+              </div>
+              <h3 class="font-bold text-base text-white">Only Students Attendance</h3>
+              <p class="text-xs text-slate-400 leading-relaxed">
+                Tailored for teachers, instructors, schools, and tutors. Quick 1-click batch classroom roll-call, class sections, student rosters, and guardian contacts.
+              </p>
+            </div>
+            <div class="pt-3 border-t border-slate-800 text-[11px] text-slate-400 space-y-1">
+              <div class="font-semibold text-slate-300">Classroom Focus:</div>
+              <p class="text-[11px] text-slate-500">Teacher Roll-Call • 1-Click Batch (P/A/L/E) • Classes & Sections • Student Roster • Excel Export</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Buttons -->
+        <div class="pt-4 flex items-center justify-between gap-3 border-t border-slate-800/80">
+          <button id="btn-purpose-back" type="button"
+                  class="px-5 py-2.5 rounded-xl text-xs sm:text-sm font-semibold bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 transition flex items-center gap-2 active:scale-95">
+            <i class="fa-solid fa-arrow-left"></i>
+            <span>Back</span>
+          </button>
+          <button id="btn-purpose-next" type="button"
+                  class="px-6 py-2.5 rounded-xl text-xs sm:text-sm font-bold bg-indigo-600 hover:bg-indigo-500 text-white shadow-lg shadow-indigo-600/30 transition flex items-center gap-2 active:scale-95">
+            <span>Next: Supabase Setup Guide</span>
+            <i class="fa-solid fa-arrow-right"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- ==========================================
+           STEP 3: SUPABASE SETUP & TAILORED SCHEMA
+           ========================================== -->
+      <div id="wizard-step-3" class="hidden space-y-6 animate-in fade-in duration-300">
+        <div class="text-center max-w-xl mx-auto space-y-2">
+          <span class="text-xs font-mono uppercase tracking-widest text-indigo-400 font-semibold">Step 3 of 4</span>
+          <h2 class="text-xl sm:text-3xl font-extrabold text-white tracking-tight">
+            How to Setup Supabase & Run Schema
+          </h2>
+          <p class="text-xs sm:text-sm text-slate-400 leading-relaxed">
+            Follow these 3 easy steps to launch your private cloud database with your purpose-tailored schema.
+          </p>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+          <!-- Step 1 & Step 3 Instructions -->
+          <div class="space-y-4">
+            <!-- Instruction 1 -->
+            <div class="glass-panel p-4 rounded-2xl border border-slate-800 bg-slate-900/40 space-y-2">
+              <div class="flex items-center gap-2.5">
+                <span class="w-6 h-6 rounded-lg bg-indigo-600 text-white font-bold text-xs flex items-center justify-center">1</span>
+                <h4 class="font-bold text-sm text-white">Create a Supabase Project</h4>
+              </div>
+              <p class="text-xs text-slate-400 leading-relaxed">
+                Visit <b class="text-slate-200">supabase.com</b>, create a free account, and click <b class="text-indigo-400">+ New Project</b>.
+              </p>
+              <a href="https://supabase.com/dashboard/projects" target="_blank" rel="noopener noreferrer"
+                 class="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-semibold bg-indigo-600/20 hover:bg-indigo-600 text-indigo-300 hover:text-white border border-indigo-500/30 transition">
+                <span>Open Supabase.com</span>
+                <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
+              </a>
+            </div>
+
+            <!-- Instruction 2 -->
+            <div class="glass-panel p-4 rounded-2xl border border-slate-800 bg-slate-900/40 space-y-2">
+              <div class="flex items-center gap-2.5">
+                <span class="w-6 h-6 rounded-lg bg-indigo-600 text-white font-bold text-xs flex items-center justify-center">2</span>
+                <h4 class="font-bold text-sm text-white">Run Schema in SQL Editor</h4>
+              </div>
+              <p class="text-xs text-slate-400 leading-relaxed">
+                In your Supabase project dashboard, click <b class="text-slate-200">SQL Editor</b> in the left sidebar, click <b class="text-slate-200">New Query</b>, paste the tailored SQL code, and click <b class="text-emerald-400">Run</b>.
+              </p>
+            </div>
+
+            <!-- Instruction 3 -->
+            <div class="glass-panel p-4 rounded-2xl border border-slate-800 bg-slate-900/40 space-y-2">
+              <div class="flex items-center gap-2.5">
+                <span class="w-6 h-6 rounded-lg bg-indigo-600 text-white font-bold text-xs flex items-center justify-center">3</span>
+                <h4 class="font-bold text-sm text-white">Extract API Credentials</h4>
+              </div>
+              <p class="text-xs text-slate-400 leading-relaxed">
+                Navigate to <b class="text-slate-200">Project Settings -> API</b>. Copy your <b class="text-indigo-400">Project URL</b> and the public <b class="text-indigo-400">anon</b> key.
+              </p>
+              <p class="text-[11px] text-amber-400/90 font-medium">
+                <i class="fa-solid fa-shield-halved mr-1"></i> Never use service_role key; our client blocks it for your security.
+              </p>
+            </div>
+          </div>
+
+          <!-- Tailored Schema Code Preview and Copy Card -->
+          <div class="lg:col-span-2 glass-panel p-4 sm:p-5 rounded-2xl border border-slate-800 bg-slate-900/50 flex flex-col justify-between space-y-3">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-2 border-b border-slate-800">
+              <div class="flex items-center gap-2">
+                <i class="fa-solid fa-code text-indigo-400 text-base"></i>
+                <h4 class="font-bold text-sm text-white">Tailored SQL Schema Script</h4>
+                <span id="wizard-schema-purpose-badge" class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-indigo-500/20 text-indigo-400 border border-indigo-500/30">
+                  Staff & Students Attendance
+                </span>
+              </div>
+              <button id="btn-copy-tailored-schema" type="button"
+                      class="px-3.5 py-1.5 rounded-xl text-xs font-bold bg-indigo-600 hover:bg-indigo-500 text-white shadow-md shadow-indigo-600/30 transition flex items-center justify-center gap-1.5 active:scale-95">
+                <i class="fa-regular fa-copy"></i>
+                <span>Copy Tailored SQL Schema</span>
+              </button>
+            </div>
+
+            <pre class="bg-slate-950 p-3.5 rounded-xl border border-slate-800 text-[11px] font-mono text-indigo-200 overflow-x-auto max-h-80 select-all leading-relaxed"><code id="wizard-schema-code-display">-- SQL Code will populate dynamically based on your purpose</code></pre>
+
+            <p class="text-[11px] text-slate-400 flex items-center gap-1.5">
+              <i class="fa-solid fa-circle-check text-emerald-400"></i>
+              <span>Includes Row Level Security (RLS) policies, indexes, and zero default mock data.</span>
+            </p>
+          </div>
+        </div>
+
+        <!-- Buttons -->
+        <div class="pt-4 flex items-center justify-between gap-3 border-t border-slate-800/80">
+          <button id="btn-guide-back" type="button"
+                  class="px-5 py-2.5 rounded-xl text-xs sm:text-sm font-semibold bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 transition flex items-center gap-2 active:scale-95">
+            <i class="fa-solid fa-arrow-left"></i>
+            <span>Back</span>
+          </button>
+          <button id="btn-guide-next" type="button"
+                  class="px-6 py-2.5 rounded-xl text-xs sm:text-sm font-bold bg-indigo-600 hover:bg-indigo-500 text-white shadow-lg shadow-indigo-600/30 transition flex items-center gap-2 active:scale-95">
+            <span>Next: Enter Credentials</span>
+            <i class="fa-solid fa-arrow-right"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- ==========================================
+           STEP 4: CONNECT DATABASE / LOGIN SCREEN
+           ========================================== -->
+      <div id="wizard-step-4" class="hidden space-y-6 animate-in fade-in duration-300">
+        <div class="text-center max-w-xl mx-auto space-y-2">
+          <span class="text-xs font-mono uppercase tracking-widest text-indigo-400 font-semibold">Step 4 of 4</span>
+          <h2 class="text-xl sm:text-3xl font-extrabold text-white tracking-tight">
+            Connect Your Supabase Project
+          </h2>
+          <p class="text-xs sm:text-sm text-slate-400 leading-relaxed">
+            Enter your Project URL and Public Anon Key. Once connected, you will be directed straight to your dashboard.
+          </p>
+        </div>
+
+        <div class="max-w-xl mx-auto w-full glass-panel p-5 sm:p-7 rounded-2xl border border-slate-800 bg-slate-900/60 space-y-5 shadow-2xl">
+          <!-- Security Callout -->
+          <div class="p-3.5 rounded-xl bg-indigo-500/10 border border-indigo-500/20 text-xs text-indigo-300 flex items-start gap-3">
+            <i class="fa-solid fa-shield-halved text-lg text-indigo-400 mt-0.5 flex-shrink-0"></i>
+            <div class="space-y-1">
+              <strong class="font-bold text-white block">Client-Side Encryption Active</strong>
+              <p class="text-[11px] leading-relaxed text-indigo-200/80">
+                Credentials are encrypted using browser Web Crypto AES-GCM before local storage. The public <code class="bg-indigo-950 px-1 py-0.5 rounded text-indigo-200 font-mono">anon</code> key is required. Secret <code class="bg-indigo-950 px-1 py-0.5 rounded text-rose-300 font-mono">service_role</code> keys are prohibited and blocked.
+              </p>
+            </div>
+          </div>
+
+          <!-- Project URL Input -->
+          <div>
+            <label class="block text-xs font-bold uppercase text-slate-400 mb-1.5">
+              Supabase Project URL *
+            </label>
+            <div class="relative">
+              <input type="text" id="wizard-supabase-url" placeholder="https://yourprojectid.supabase.co"
+                     autocomplete="off" spellcheck="false"
+                     class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-xs sm:text-sm text-white font-mono focus:border-indigo-500 focus:outline-none">
+            </div>
+          </div>
+
+          <!-- Anon Key Input -->
+          <div>
+            <div class="flex items-center justify-between mb-1.5">
+              <label class="block text-xs font-bold uppercase text-slate-400">
+                Supabase Anon Public API Key *
+              </label>
+              <span class="text-[10px] text-emerald-400 font-semibold"><i class="fa-solid fa-lock text-[9px]"></i> AES-GCM Protected</span>
+            </div>
+            <div class="relative">
+              <input type="password" id="wizard-supabase-key" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+                     autocomplete="off" spellcheck="false"
+                     class="w-full bg-slate-950 border border-slate-800 rounded-xl pl-4 pr-10 py-2.5 text-xs sm:text-sm text-white font-mono focus:border-indigo-500 focus:outline-none">
+              <button type="button" id="btn-wizard-toggle-key" class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white p-1" title="Toggle visibility">
+                <i class="fa-solid fa-eye text-xs"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- Action Buttons -->
+          <div class="flex flex-col sm:flex-row items-center gap-3 pt-2">
+            <button id="btn-wizard-test-db" type="button"
+                    class="w-full sm:w-auto px-5 py-2.5 rounded-xl text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition flex items-center justify-center gap-2 active:scale-95">
+              <i class="fa-solid fa-plug text-slate-400"></i>
+              <span>Test Connection</span>
+            </button>
+            <button id="btn-wizard-connect-db" type="button"
+                    class="w-full sm:flex-1 px-6 py-2.5 rounded-xl text-xs sm:text-sm font-bold bg-gradient-to-r from-indigo-600 via-indigo-500 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white shadow-lg shadow-indigo-600/30 transition flex items-center justify-center gap-2 active:scale-95">
+              <i class="fa-solid fa-rocket"></i>
+              <span>Connect & Enter Dashboard</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Back Button -->
+        <div class="pt-4 flex items-center justify-between gap-3 border-t border-slate-800/80">
+          <button id="btn-connect-back" type="button"
+                  class="px-5 py-2.5 rounded-xl text-xs sm:text-sm font-semibold bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 transition flex items-center gap-2 active:scale-95">
+            <i class="fa-solid fa-arrow-left"></i>
+            <span>Back</span>
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ==============================================================================
        EXTERNAL DEPENDENCY SCRIPTS (CDN)
        ============================================================================== -->
   <!-- Supabase JS Client v2 -->
@@ -1619,6 +2112,7 @@ ALTER PUBLICATION supabase_realtime ADD TABLE students;</code></pre>
   <script src="js/attendance.js"></script>
   <script src="js/employees.js"></script>
   <script src="js/students.js"></script>
+  <script src="js/onboarding.js"></script>
   <script src="js/leaves.js"></script>
   <script src="js/analytics.js"></script>
   <script src="js/reports.js"></script>

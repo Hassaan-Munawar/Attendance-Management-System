@@ -13,25 +13,40 @@ const App = {
     const isConnected = await CONFIG.init();
     await DB.init();
 
-    // 2. Setup Top-bar Connection Badge, Dynamic UI Visibility, and Nav
+    // 2. Initialize Onboarding & Welcome Wizard
+    if (window.OnboardingModule) {
+      OnboardingModule.init();
+    }
+
+    // 3. Apply System Purpose (both, staff, or students)
+    const purpose = CONFIG.getPurpose ? CONFIG.getPurpose() : "both";
+    this.applySystemPurpose(purpose);
+
+    // 4. Setup Top-bar Connection Badge, Dynamic UI Visibility, and Nav
     this.updateConnectionBadge();
     this.updateConnectionUI();
     this.setupNavigation();
     this.setupSettingsView();
 
-    // 3. Initialize Child Modules
+    // 5. Initialize Child Modules
     AttendanceModule.init();
     EmployeeModule.init();
     await StudentModule.init();
     LeaveModule.init();
     ReportsModule.init();
 
-    // 4. Check if Supabase credentials are configured
+    // 6. Check if Supabase credentials are configured
     if (!isConnected) {
-      console.warn("Supabase credentials not found. Directing to setup.");
+      console.warn("Supabase credentials not found. Opening welcome & setup wizard.");
       this.showSetupNotification();
-      this.switchView("settings");
+      if (window.OnboardingModule) {
+        OnboardingModule.open(1);
+      }
     } else {
+      if (window.OnboardingModule) {
+        OnboardingModule.close();
+      }
+
       // Load live Supabase data for staff and students
       await this.refreshAllData();
 
@@ -49,10 +64,16 @@ const App = {
   },
 
   async refreshAllData() {
-    await EmployeeModule.loadEmployees();
-    await StudentModule.refreshData();
-    await AttendanceModule.populateEmployeeSelect();
-    await AttendanceModule.refreshDailyAttendanceTable();
+    const purpose = CONFIG.getPurpose ? CONFIG.getPurpose() : "both";
+
+    if (purpose !== "students") {
+      await EmployeeModule.loadEmployees();
+      await AttendanceModule.populateEmployeeSelect();
+      await AttendanceModule.refreshDailyAttendanceTable();
+    }
+    if (purpose !== "staff") {
+      await StudentModule.refreshData();
+    }
     await this.refreshDashboardStats();
   },
 
@@ -70,6 +91,16 @@ const App = {
   // VIEW ROUTING
   // ==========================================
   switchView(viewName) {
+    const purpose = CONFIG.getPurpose ? CONFIG.getPurpose() : "both";
+    const staffOnlyViews = ["kiosk", "attendance", "employees", "leaves"];
+    const studentOnlyViews = ["classroom", "students"];
+
+    if (purpose === "staff" && studentOnlyViews.includes(viewName)) {
+      viewName = "dashboard";
+    } else if (purpose === "students" && staffOnlyViews.includes(viewName)) {
+      viewName = "dashboard";
+    }
+
     this.currentView = viewName;
     window.location.hash = viewName;
 
@@ -167,6 +198,135 @@ const App = {
       if (urlInput) urlInput.value = CONFIG.currentUrl || "";
       if (keyInput) keyInput.value = CONFIG.currentKey || "";
     }
+  },
+
+  // ==========================================
+  // SYSTEM PURPOSE & WORKSPACE ADAPTATION
+  // ==========================================
+  applySystemPurpose(purpose = "both") {
+    if (CONFIG.setPurpose) {
+      CONFIG.setPurpose(purpose);
+    }
+
+    const navSectionAcademic = document.getElementById("nav-section-academic");
+    const navItemClassroom = document.getElementById("nav-item-classroom");
+    const navItemStudents = document.getElementById("nav-item-students");
+
+    const navItemKiosk = document.getElementById("nav-item-kiosk");
+    const navItemAttendance = document.getElementById("nav-item-attendance");
+    const navItemEmployees = document.getElementById("nav-item-employees");
+    const navItemLeaves = document.getElementById("nav-item-leaves");
+
+    const dashboardBtn1 = document.getElementById("dashboard-header-btn-1");
+    const dashboardBtn2 = document.getElementById("dashboard-header-btn-2");
+
+    if (purpose === "staff") {
+      // Hide academic modules
+      if (navSectionAcademic) navSectionAcademic.classList.add("hidden");
+      if (navItemClassroom) navItemClassroom.classList.add("hidden");
+      if (navItemStudents) navItemStudents.classList.add("hidden");
+
+      // Show staff modules
+      if (navItemKiosk) navItemKiosk.classList.remove("hidden");
+      if (navItemAttendance) navItemAttendance.classList.remove("hidden");
+      if (navItemEmployees) navItemEmployees.classList.remove("hidden");
+      if (navItemLeaves) navItemLeaves.classList.remove("hidden");
+
+      this.updateQuickActionButton("kiosk", "Clock In / Out", "fa-stopwatch");
+
+      if (dashboardBtn1) {
+        dashboardBtn1.innerHTML = `<i class="fa-solid fa-list-check"></i> <span>Daily Logs</span>`;
+        dashboardBtn1.dataset.targetView = "attendance";
+      }
+      if (dashboardBtn2) {
+        dashboardBtn2.innerHTML = `<i class="fa-solid fa-qrcode"></i> <span>Kiosk</span>`;
+        dashboardBtn2.dataset.targetView = "kiosk";
+      }
+    } else if (purpose === "students") {
+      // Show academic modules
+      if (navSectionAcademic) navSectionAcademic.classList.remove("hidden");
+      if (navItemClassroom) navItemClassroom.classList.remove("hidden");
+      if (navItemStudents) navItemStudents.classList.remove("hidden");
+
+      // Hide staff modules
+      if (navItemKiosk) navItemKiosk.classList.add("hidden");
+      if (navItemAttendance) navItemAttendance.classList.add("hidden");
+      if (navItemEmployees) navItemEmployees.classList.add("hidden");
+      if (navItemLeaves) navItemLeaves.classList.add("hidden");
+
+      this.updateQuickActionButton("classroom", "Roll Call", "fa-chalkboard-user");
+
+      if (dashboardBtn1) {
+        dashboardBtn1.innerHTML = `<i class="fa-solid fa-graduation-cap"></i> <span>Students</span>`;
+        dashboardBtn1.dataset.targetView = "students";
+      }
+      if (dashboardBtn2) {
+        dashboardBtn2.innerHTML = `<i class="fa-solid fa-chalkboard-user"></i> <span>Roll Call</span>`;
+        dashboardBtn2.dataset.targetView = "classroom";
+      }
+    } else {
+      // Both: Show all modules
+      if (navSectionAcademic) navSectionAcademic.classList.remove("hidden");
+      if (navItemClassroom) navItemClassroom.classList.remove("hidden");
+      if (navItemStudents) navItemStudents.classList.remove("hidden");
+
+      if (navItemKiosk) navItemKiosk.classList.remove("hidden");
+      if (navItemAttendance) navItemAttendance.classList.remove("hidden");
+      if (navItemEmployees) navItemEmployees.classList.remove("hidden");
+      if (navItemLeaves) navItemLeaves.classList.remove("hidden");
+
+      this.updateQuickActionButton("kiosk", "Clock In / Out", "fa-stopwatch");
+
+      if (dashboardBtn1) {
+        dashboardBtn1.innerHTML = `<i class="fa-solid fa-list-check"></i> <span>Daily Logs</span>`;
+        dashboardBtn1.dataset.targetView = "attendance";
+      }
+      if (dashboardBtn2) {
+        dashboardBtn2.innerHTML = `<i class="fa-solid fa-qrcode"></i> <span>Kiosk</span>`;
+        dashboardBtn2.dataset.targetView = "kiosk";
+      }
+    }
+
+    // Sync radio inputs in Settings view
+    document.querySelectorAll('input[name="settings-system-purpose"]').forEach(radio => {
+      radio.checked = (radio.value === purpose);
+    });
+
+    // Update SQL Schema display in Settings view
+    if (window.OnboardingModule && OnboardingModule.SCHEMAS) {
+      const schemaDisplay = document.getElementById("schema-code-display");
+      if (schemaDisplay && OnboardingModule.SCHEMAS[purpose]) {
+        schemaDisplay.textContent = OnboardingModule.SCHEMAS[purpose];
+      }
+    }
+  },
+
+  updateQuickActionButton(targetView, label, iconClass) {
+    const textEl = document.getElementById("header-quick-action-text");
+    const iconEl = document.getElementById("header-quick-action-icon");
+    const btn = document.getElementById("header-quick-action-btn");
+
+    if (textEl) textEl.textContent = label;
+    if (iconEl) iconEl.className = `fa-solid ${iconClass}`;
+    if (btn) btn.dataset.targetView = targetView;
+  },
+
+  triggerQuickAction() {
+    const btn = document.getElementById("header-quick-action-btn");
+    const targetView = btn?.dataset.targetView || (CONFIG.getPurpose() === "students" ? "classroom" : "kiosk");
+    this.switchView(targetView);
+  },
+
+  triggerDashboardAction1() {
+    const btn = document.getElementById("dashboard-header-btn-1");
+    const target = btn?.dataset.targetView || (CONFIG.getPurpose() === "students" ? "students" : "attendance");
+    this.switchView(target);
+  },
+
+  triggerDashboardAction2() {
+    const btn = document.getElementById("dashboard-header-btn-2");
+    const target = btn?.dataset.targetView || (CONFIG.getPurpose() === "students" ? "classroom" : "kiosk");
+    this.switchView(target);
   },
 
   // ==========================================
@@ -331,10 +491,13 @@ const App = {
           Swal.fire({
             icon: "success",
             title: "Connected & Secured!",
-            text: "Your database is now connected. All employee and student records are synchronized directly with Supabase.",
-            timer: 2200,
+            text: "Your database is now connected. Directing to dashboard...",
+            timer: 1800,
             showConfirmButton: false
           });
+
+          // Redirect directly to dashboard as requested!
+          this.switchView("dashboard");
         } else {
           CONFIG.playSound("error");
           Swal.fire({ icon: "error", title: "Configuration Error", text: result.message || "Could not initialize Supabase client." });
@@ -390,6 +553,11 @@ const App = {
 
         await this.refreshAllData();
         Swal.fire({ icon: "info", title: "Disconnected", text: "Supabase credentials cleared.", timer: 1500, showConfirmButton: false });
+
+        // Launch onboarding wizard to guide reconnect or setup
+        if (window.OnboardingModule) {
+          OnboardingModule.open(1);
+        }
       });
     }
 
@@ -425,6 +593,28 @@ const App = {
         }
       });
     }
+
+    // 8. Purpose of Use Selector in Settings
+    document.querySelectorAll('input[name="settings-system-purpose"]').forEach(radio => {
+      radio.addEventListener("change", async (e) => {
+        const newPurpose = e.target.value;
+        this.applySystemPurpose(newPurpose);
+        if (window.OnboardingModule) {
+          OnboardingModule.selectPurpose(newPurpose);
+        }
+        CONFIG.playSound("success");
+        await this.refreshAllData();
+
+        const label = newPurpose === "staff" ? "Only Staff Attendance" : newPurpose === "students" ? "Only Students Attendance" : "Staff & Students Attendance";
+        Swal.fire({
+          icon: "success",
+          title: "Workspace Mode Updated",
+          text: `Switched system purpose to "${label}". Active navigation and SQL schema have been tailored.`,
+          timer: 2000,
+          showConfirmButton: false
+        });
+      });
+    });
   },
 
   setupNavigation() {

@@ -96,12 +96,23 @@ const CONFIG = {
     SUPABASE_URL: "ams_supabase_url_sec",
     SUPABASE_ANON_KEY: "ams_supabase_anon_key_sec",
     LEGACY_URL: "ams_supabase_url",
-    LEGACY_KEY: "ams_supabase_anon_key"
+    LEGACY_KEY: "ams_supabase_anon_key",
+    SYSTEM_PURPOSE: "ams_system_purpose"
   },
 
   client: null,
   currentUrl: "",
   currentKey: "",
+
+  getPurpose() {
+    return localStorage.getItem(this.STORAGE_KEYS.SYSTEM_PURPOSE) || "both";
+  },
+
+  setPurpose(purpose) {
+    if (["both", "staff", "students"].includes(purpose)) {
+      localStorage.setItem(this.STORAGE_KEYS.SYSTEM_PURPOSE, purpose);
+    }
+  },
 
   /**
    * Inspects a JWT to check if it has the dangerous service_role claim

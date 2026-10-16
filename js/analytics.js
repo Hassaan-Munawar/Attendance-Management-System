@@ -1,6 +1,7 @@
 /**
  * Analytics & Data Visualization Module
  * Directly visualizes live Supabase attendance logs with Chart.js
+ * Intelligently adapts to purpose: Staff, Students, or Both
  */
 
 const AnalyticsModule = {
@@ -16,18 +17,8 @@ const AnalyticsModule = {
   },
 
   async renderDashboardKPIs() {
-    const employees = await DB.getEmployees();
-    const activeEmployees = employees.filter(e => e.status !== "inactive");
-    const totalStaff = activeEmployees.length;
-
+    const purpose = CONFIG.getPurpose ? CONFIG.getPurpose() : "both";
     const today = new Date().toISOString().split("T")[0];
-    const todayAttendance = await DB.getAttendance({ date: today });
-
-    const presentList = todayAttendance.filter(a => a.status === "present" || a.status === "late" || a.status === "half_day");
-    const lateList = todayAttendance.filter(a => a.status === "late");
-    const leaveList = todayAttendance.filter(a => a.status === "on_leave");
-
-    const rate = totalStaff > 0 ? Math.round((presentList.length / totalStaff) * 100) : 0;
 
     const elTotalStaff = document.getElementById("kpi-total-staff");
     const elPresent = document.getElementById("kpi-present-today");
@@ -36,6 +27,58 @@ const AnalyticsModule = {
     const elRate = document.getElementById("kpi-attendance-rate");
     const elRateBar = document.getElementById("kpi-attendance-bar");
 
+    if (purpose === "students") {
+      // ------------------------------------------
+      // STUDENT ATTENDANCE DASHBOARD METRICS
+      // ------------------------------------------
+      const kpiStaffLabel = elTotalStaff?.closest(".glass-panel")?.querySelector("p");
+      if (kpiStaffLabel) kpiStaffLabel.textContent = "Total Students";
+      const kpiLeaveLabel = elLeaves?.closest(".glass-panel")?.querySelector("p");
+      if (kpiLeaveLabel) kpiLeaveLabel.textContent = "Absent / Excused";
+
+      const students = await DB.getStudents();
+      const activeStudents = students.filter(s => s.status !== "inactive");
+      const totalCount = activeStudents.length;
+
+      const todayRecords = await DB.getStudentAttendanceReport({ startDate: today, endDate: today });
+
+      const presentList = todayRecords.filter(a => a.status === "present" || a.status === "late");
+      const lateList = todayRecords.filter(a => a.status === "late");
+      const absentList = todayRecords.filter(a => a.status === "absent" || a.status === "excused");
+
+      const rate = totalCount > 0 ? Math.round((presentList.length / totalCount) * 100) : 0;
+
+      if (elTotalStaff) elTotalStaff.textContent = totalCount;
+      if (elPresent) elPresent.textContent = presentList.length;
+      if (elLate) elLate.textContent = lateList.length;
+      if (elLeaves) elLeaves.textContent = absentList.length;
+      if (elRate) elRate.textContent = `${rate}%`;
+      if (elRateBar) elRateBar.style.width = `${rate}%`;
+
+      this.renderStudentActivityFeed(todayRecords);
+      return;
+    }
+
+    // ------------------------------------------
+    // STAFF & ENTERPRISE DASHBOARD METRICS
+    // ------------------------------------------
+    const kpiStaffLabel = elTotalStaff?.closest(".glass-panel")?.querySelector("p");
+    if (kpiStaffLabel) kpiStaffLabel.textContent = "Total Staff";
+    const kpiLeaveLabel = elLeaves?.closest(".glass-panel")?.querySelector("p");
+    if (kpiLeaveLabel) kpiLeaveLabel.textContent = "Approved Leave";
+
+    const employees = await DB.getEmployees();
+    const activeEmployees = employees.filter(e => e.status !== "inactive");
+    const totalStaff = activeEmployees.length;
+
+    const todayAttendance = await DB.getAttendance({ date: today });
+
+    const presentList = todayAttendance.filter(a => a.status === "present" || a.status === "late" || a.status === "half_day");
+    const lateList = todayAttendance.filter(a => a.status === "late");
+    const leaveList = todayAttendance.filter(a => a.status === "on_leave");
+
+    const rate = totalStaff > 0 ? Math.round((presentList.length / totalStaff) * 100) : 0;
+
     if (elTotalStaff) elTotalStaff.textContent = totalStaff;
     if (elPresent) elPresent.textContent = presentList.length;
     if (elLate) elLate.textContent = lateList.length;
@@ -43,7 +86,6 @@ const AnalyticsModule = {
     if (elRate) elRate.textContent = `${rate}%`;
     if (elRateBar) elRateBar.style.width = `${rate}%`;
 
-    // Render live activity feed on dashboard
     this.renderActivityFeed(todayAttendance);
   },
 
@@ -90,6 +132,49 @@ const AnalyticsModule = {
     }).join("");
   },
 
+  renderStudentActivityFeed(todayRecords) {
+    const feed = document.getElementById("dashboard-activity-feed");
+    if (!feed) return;
+
+    const recent = [...todayRecords].slice(0, 6);
+
+    if (recent.length === 0) {
+      feed.innerHTML = `
+        <div class="py-6 text-center text-slate-500 text-xs">
+          <i class="fa-solid fa-chalkboard-user text-2xl mb-1 opacity-40"></i>
+          <p>No student roll-calls recorded today</p>
+        </div>
+      `;
+      return;
+    }
+
+    feed.innerHTML = recent.map(r => {
+      const std = r.students || {};
+      const cls = r.classes || {};
+      const isLate = r.status === "late";
+      const isAbsent = r.status === "absent";
+      const isExcused = r.status === "excused";
+      const statusColor = isLate ? 'text-amber-400' : (isAbsent || isExcused) ? 'text-rose-400' : 'text-emerald-400';
+
+      return `
+        <div class="flex items-center justify-between py-2 border-b border-slate-800/80 text-xs last:border-0">
+          <div class="flex items-center gap-2.5">
+            <div class="w-7 h-7 rounded-full bg-indigo-500/20 text-indigo-400 flex items-center justify-center font-bold text-xs border border-indigo-500/30">
+              ${(std.first_name || 'S').charAt(0)}
+            </div>
+            <div>
+              <div class="font-semibold text-slate-200">${std.first_name || 'Student'} ${std.last_name || ''}</div>
+              <div class="text-[10px] text-slate-400">${cls.name || 'Class'} • Roll ${std.roll_number || 'N/A'}</div>
+            </div>
+          </div>
+          <div class="text-right">
+            <span class="block text-[10px] uppercase font-bold ${statusColor}">${r.status}</span>
+          </div>
+        </div>
+      `;
+    }).join("");
+  },
+
   // ==========================================
   // 10-DAY ATTENDANCE TREND CHART
   // ==========================================
@@ -101,7 +186,7 @@ const AnalyticsModule = {
       this.trendChartInstance.destroy();
     }
 
-    const allRecords = await DB.getAttendance();
+    const purpose = CONFIG.getPurpose ? CONFIG.getPurpose() : "both";
 
     // Group records by last 10 work days
     const daysMap = new Map();
@@ -117,14 +202,30 @@ const AnalyticsModule = {
       }
     }
 
-    allRecords.forEach(r => {
-      if (daysMap.has(r.date)) {
-        const item = daysMap.get(r.date);
-        if (r.status === "present") item.present++;
-        else if (r.status === "late") item.late++;
-        else if (r.status === "absent") item.absent++;
-      }
-    });
+    if (purpose === "students") {
+      const startStr = Array.from(daysMap.keys())[0] || today.toISOString().split("T")[0];
+      const endStr = today.toISOString().split("T")[0];
+      const records = await DB.getStudentAttendanceReport({ startDate: startStr, endDate: endStr });
+
+      records.forEach(r => {
+        if (daysMap.has(r.date)) {
+          const item = daysMap.get(r.date);
+          if (r.status === "present") item.present++;
+          else if (r.status === "late") item.late++;
+          else if (r.status === "absent" || r.status === "excused") item.absent++;
+        }
+      });
+    } else {
+      const allRecords = await DB.getAttendance();
+      allRecords.forEach(r => {
+        if (daysMap.has(r.date)) {
+          const item = daysMap.get(r.date);
+          if (r.status === "present") item.present++;
+          else if (r.status === "late") item.late++;
+          else if (r.status === "absent") item.absent++;
+        }
+      });
+    }
 
     const labels = Array.from(daysMap.values()).map(v => v.label);
     const presentData = Array.from(daysMap.values()).map(v => v.present);
@@ -206,10 +307,58 @@ const AnalyticsModule = {
       this.distributionChartInstance.destroy();
     }
 
+    const purpose = CONFIG.getPurpose ? CONFIG.getPurpose() : "both";
     const today = new Date().toISOString().split("T")[0];
-    const todayRecords = await DB.getAttendance({ date: today });
 
+    if (purpose === "students") {
+      const todayRecords = await DB.getStudentAttendanceReport({ startDate: today, endDate: today });
+      let present = 0, late = 0, absent = 0, excused = 0;
+
+      todayRecords.forEach(r => {
+        if (r.status === "present") present++;
+        else if (r.status === "late") late++;
+        else if (r.status === "absent") absent++;
+        else if (r.status === "excused") excused++;
+      });
+
+      const totalPunches = present + late + absent + excused;
+
+      this.distributionChartInstance = new Chart(ctx, {
+        type: "doughnut",
+        data: {
+          labels: ["Present", "Late", "Absent", "Excused"],
+          datasets: [{
+            data: totalPunches > 0 ? [present, late, absent, excused] : [0, 0, 0, 0],
+            backgroundColor: ["#10b981", "#f59e0b", "#ef4444", "#38bdf8"],
+            borderColor: "#0f172a",
+            borderWidth: 3,
+            hoverOffset: 4
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          cutout: "74%",
+          plugins: {
+            legend: {
+              position: "bottom",
+              labels: { color: "#94a3b8", font: { size: 11 }, usePointStyle: true, boxWidth: 8, padding: 12 }
+            },
+            tooltip: {
+              backgroundColor: "#1e293b",
+              titleColor: "#f1f5f9",
+              bodyColor: "#cbd5e1"
+            }
+          }
+        }
+      });
+      return;
+    }
+
+    // Staff or Both
+    const todayRecords = await DB.getAttendance({ date: today });
     let present = 0, late = 0, halfDay = 0, absent = 0, leave = 0;
+
     todayRecords.forEach(r => {
       if (r.status === "present") present++;
       else if (r.status === "late") late++;
@@ -252,7 +401,7 @@ const AnalyticsModule = {
   },
 
   // ==========================================
-  // DEPARTMENT PERFORMANCE (HORIZONTAL BARS)
+  // DEPARTMENT / CLASS PERFORMANCE (HORIZONTAL BARS)
   // ==========================================
   async renderDepartmentChart() {
     const ctx = document.getElementById("departmentAttendanceChart");
@@ -262,6 +411,62 @@ const AnalyticsModule = {
       this.departmentChartInstance.destroy();
     }
 
+    const purpose = CONFIG.getPurpose ? CONFIG.getPurpose() : "both";
+
+    if (purpose === "students") {
+      const classes = await DB.getClasses();
+      const allRecords = await DB.getStudentAttendanceReport();
+
+      const classStats = classes.map(cls => {
+        const clsRecords = allRecords.filter(r => r.class_id === cls.id);
+        const total = clsRecords.length;
+        const present = clsRecords.filter(r => r.status === "present" || r.status === "late").length;
+        const rate = total > 0 ? Math.round((present / total) * 100) : 0;
+        return { name: cls.name + (cls.section ? ` (${cls.section})` : ""), rate };
+      });
+
+      this.departmentChartInstance = new Chart(ctx, {
+        type: "bar",
+        data: {
+          labels: classStats.map(c => c.name),
+          datasets: [{
+            label: "Classroom Attendance Rate %",
+            data: classStats.map(c => c.rate),
+            backgroundColor: "#10b981",
+            borderRadius: 6,
+            barPercentage: 0.6
+          }]
+        },
+        options: {
+          indexAxis: "y",
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              callbacks: {
+                label: (item) => ` ${item.raw}% attendance compliance`
+              }
+            }
+          },
+          scales: {
+            x: {
+              min: 0,
+              max: 100,
+              grid: { color: "#1e293b" },
+              ticks: { color: "#64748b", callback: v => `${v}%` }
+            },
+            y: {
+              grid: { display: false },
+              ticks: { color: "#94a3b8" }
+            }
+          }
+        }
+      });
+      return;
+    }
+
+    // Staff or Both
     const depts = await DB.getDepartments();
     const employees = await DB.getEmployees();
     const allAttendance = await DB.getAttendance();
